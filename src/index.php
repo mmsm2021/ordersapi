@@ -1,0 +1,1 @@
+<?php die( 'you good man');
