@@ -12,7 +12,8 @@ services:
         links:
             - php
     php:
-        image: php:7.4-fpm-alpine
+        build:
+            context: images/php
         restart: unless-stopped
         volumes:
             - ./src:/var/www/html
