@@ -19,9 +19,8 @@ services:
             - ./src:/var/www/html
         links:
             - mongo
-        environment:
-            
-        
+#        environment:
+
     mongo:
         image: mongo
         restart: unless-stopped
