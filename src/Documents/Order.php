@@ -9,7 +9,7 @@ use DateTime;
 /** @ODM\Document(collection="Orders") */
 class Order
 {
-    /** @ODM\Id */
+    /** @ODM\Id(type="string") */
     private $orderId;
 
     /** @ODM\Field(type="string") */
@@ -41,7 +41,7 @@ class Order
         $this->items = new ArrayCollection();
     }
 
-    public function getOrderId(): int { return $this->orderId; }
+    public function getOrderId(): string { return $this->orderId; }
 
     public function getLocation(): string { return $this->location; }
     public function setLocation(string $location): void { $this->location = $location; }
