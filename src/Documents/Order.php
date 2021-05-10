@@ -4,6 +4,7 @@ namespace Documents;
 
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\PersistentCollection;
 use DateTime;
 
 /** @ODM\Document(collection="Orders") */
@@ -75,6 +76,7 @@ class Order
             $this->items[] = $orderItem;
         } 
     }
+    public function getPersistentItems(): PersistentCollection { return $this->items; }
 
     public function getDiscount(): ?int { return $this->discount; }
     public function setDiscount(int $discount): void { $this->discount = $discount; }
