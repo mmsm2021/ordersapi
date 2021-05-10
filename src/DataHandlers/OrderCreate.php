@@ -37,4 +37,8 @@ foreach($data as $key => $value) {
 $dm->persist($order);
 $dm->flush();
 
-echo $order->getOrderId();
+if(null != $order->getOrderId()) {
+    echo $order->getOrderId();
+} else {
+    echo 'Order creation failed';
+}
