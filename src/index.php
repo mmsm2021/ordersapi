@@ -4,8 +4,10 @@
 
 require_once 'bootstrap.php';
 
+/** verification of correct uri */
 if(strpos($_SERVER['REQUEST_URI'], '/api/orders/') !== false)
 {
+        /** sorting based on request type */
         if ($_SERVER['REQUEST_METHOD'] === 'DELETE') {
             include 'Rest/Delete/Delete.php';
         } elseif ($_SERVER['REQUEST_METHOD'] === 'GET') {
@@ -19,10 +21,12 @@ if(strpos($_SERVER['REQUEST_URI'], '/api/orders/') !== false)
         } elseif ($_SERVER['REQUEST_METHOD'] === 'PUT') {
             include 'Rest/Put/Put.php';
         } else {
+            /** Request denied */
             header('HTTP/1.0 405 Forbidden');
             echo 'Not supported!';
         }
     } else {
+        /** Request denied */
         header('HTTP/1.0 403 Forbidden');
         echo 'Forbidden!';
     }
