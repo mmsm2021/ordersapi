@@ -7,7 +7,7 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 /** @ODM\EmbeddedDocument */
 class OrderItem
 {
-    /** @ODM\Id(type="int") */
+    /** @ODM\Field(type="int") */
     private $id;
 
     /** @ODM\Field(type="string") */

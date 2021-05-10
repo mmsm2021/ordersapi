@@ -6,7 +6,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use DateTime;
 
-/** @ODM\Document(collection="orders") */
+/** @ODM\Document(collection="Orders") */
 class Order
 {
     /** @ODM\Id */
@@ -24,7 +24,7 @@ class Order
     /** @ODM\Field(type="string") */
     private $customer;
 
-    /** @ODM\Field(type="collection") */
+    /** @ODM\EmbedMany) */
     private $items = [];
 
     /** @ODM\Field(type="int") */
@@ -35,6 +35,11 @@ class Order
 
     /** @ODM\Field(type="date") */
     private $orderDate;
+
+    public function __construct()
+    {
+        $this->items = new ArrayCollection();
+    }
 
     public function getOrderId(): int { return $this->orderId; }
 
@@ -80,7 +85,6 @@ class Order
     public function getOrderDate(): ?DateTime { return $this->orderDate; }
     public function setOrderDate(): void { 
         date_default_timezone_set('CET');
-        #$this->orderDate = date('Y-m-d H:i:s'); 
         $this->orderDate = new DateTime(); 
     }
 }
