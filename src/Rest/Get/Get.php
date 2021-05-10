@@ -5,7 +5,7 @@ $verified = true;
 
 /** Verified requests are handled */
 if($verified) {
-    /** Detection: is one or more "last" documents requested, or is a specific document requested */
+    /** Detection: Is one or more "last" documents requested, or is a specific document requested */
     if(strpos($_SERVER['REQUEST_URI'], '/api/orders/last/') !== false)
     {
         include(dirname(__FILE__)."/../../DataHandlers/OrderIdFetcher.php");
@@ -15,4 +15,5 @@ if($verified) {
 } else {
     /** request denied */
     header('HTTP/1.0 403 Forbidden');
+    echo 'Forbidden!';
 }

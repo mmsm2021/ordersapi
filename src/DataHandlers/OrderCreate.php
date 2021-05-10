@@ -3,10 +3,11 @@
 use Documents\Order;
 use Documents\OrderItem;
 
+/** Gets JSON object from received request */
 $data = json_decode(file_get_contents('php://input'), true);
 
+/** Order object is populated with relevant data */
 $order = new Order();
-
 foreach($data as $key => $value) {
     switch ($key) {
         case 'location':
@@ -34,9 +35,11 @@ foreach($data as $key => $value) {
       $order->setOrderDate();
 }
 
+/** Order document is sent to DataBase */
 $dm->persist($order);
 $dm->flush();
 
+/** If creation in DataBase was successfull ID is replied to request */
 if(null != $order->getOrderId()) {
     echo $order->getOrderId();
 } else {
