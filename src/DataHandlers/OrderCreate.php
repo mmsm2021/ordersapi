@@ -33,9 +33,8 @@ foreach($data as $key => $value) {
       }
       $order->setOrderDate();
 }
-#var_dump($order);
+
 $dm->persist($order);
 $dm->flush();
 
 echo $order->getOrderId();
-#var_dump($order);
