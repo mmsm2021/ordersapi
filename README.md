@@ -10,5 +10,3 @@ Repository for orders API and orders database
 * DELETE  :: /api/orders/[id]     => will delete the specified order
 * HEAD    :: /api/orders/[id]     => will return size information on data for specified order
 * OPTIONS :: /api/orders/         => will return allowed REST methods
-
-Er det nødvendigt at opdatere en ordre, er de ikke Final?? altså afgivne og ikke til at ændre?
