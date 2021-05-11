@@ -16,12 +16,17 @@ if (null != $n)
     $orders = $dm->createQueryBuilder(Order::class)->select('orderId')->skip($count -1)->getQuery()->execute();
 }
 
-/** Return order ID(s) from document(s) */
-$ordersArray = [];
+/** order ID(s) from document(s) are put in anonymous class*/
+$ordersJson = new class($order) {
+    public $orders =[];
+
+    public function addOrder($order): void { $this->orders[] = $order; }
+};
 
 foreach($orders as $order)
     {
-        $ordersArray[] = $order->getOrderId();
+        $ordersJson->addOrder($order->getOrderID());
     }
 
-echo json_encode($ordersArray, JSON_UNESCAPED_UNICODE);
+/** order(s) are returned */
+echo json_encode($ordersJson, JSON_UNESCAPED_UNICODE);
