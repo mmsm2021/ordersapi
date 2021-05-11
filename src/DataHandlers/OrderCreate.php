@@ -13,7 +13,7 @@ foreach($data as $key => $value) {
         case 'location':
             $order->setLocation($value);
             break;
-        case 'locationID':
+        case 'locationId':
             $order->setLocationId($value);
             break;
         case 'server':
