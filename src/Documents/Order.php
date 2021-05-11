@@ -98,6 +98,7 @@ class Order
         } 
     }
     public function getPersistentItems(): PersistentCollection { return $this->items; }
+    public function clearItems(): void { $this->items = []; }
 
     /** Discount getter and setter */
     public function getDiscount(): ?int { return $this->discount; }

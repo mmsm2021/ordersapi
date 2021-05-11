@@ -5,8 +5,7 @@ $verified = true;
 
 /** Verified requests are handled */
 if($verified) {
-    $json = file_get_contents('php://input');
-    echo $json;
+    include(dirname(__FILE__)."/../../DataHandlers/OrderUpdate.php");
 } else {
     /** request denied */
     header('HTTP/1.0 403 Forbidden');
