@@ -4,7 +4,12 @@ use Documents\Order;
 
 /** Gets JSON object from received request, and gets document from DataBase */
 $data = json_decode(file_get_contents('php://input'));
-$order = $dm->find(Order::class, $data->orderId);
+try {
+    $order = $dm->find(Order::class, $data->orderId);
+} catch (Exception $e) {
+    header('HTTP/1.0 500 INTERNAL SERVER ERROR');
+    echo "Order could not be collected from Data Base\n",  $e->getMessage(), "\n";
+}
 
 /** Updates data in document */
 foreach($data as $key => $value) {
@@ -35,5 +40,10 @@ foreach($data as $key => $value) {
 }
 
 /** Stores updated document in database */
-$dm->persist($order);
-$dm->flush();
+try {
+    $dm->persist($order);
+    $dm->flush();
+} catch (Exception $e) {
+    header('HTTP/1.0 500 INTERNAL SERVER ERROR');
+    echo "Order could not be updated in Data Base\n",  $e->getMessage(), "\n";
+}

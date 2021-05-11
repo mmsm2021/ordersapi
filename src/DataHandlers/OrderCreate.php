@@ -36,12 +36,11 @@ foreach($data as $key => $value) {
 }
 
 /** Order document is sent to DataBase */
-$dm->persist($order);
-$dm->flush();
-
-/** If creation in DataBase was successfull ID is replied to request */
-if(null != $order->getOrderId()) {
+try {
+    $dm->persist($order);
+    $dm->flush();
     echo $order->getOrderId();
-} else {
-    echo 'Order creation failed';
+} catch (Exception $e) {
+    header('HTTP/1.0 500 INTERNAL SERVER ERROR');
+    echo "Order could not be created in Data Base\n",  $e->getMessage(), "\n";
 }
