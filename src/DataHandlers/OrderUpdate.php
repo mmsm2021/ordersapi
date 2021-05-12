@@ -1,6 +1,6 @@
 <?php
 
-use Documents\Order;
+use App\Documents\Order;
 
 /** Gets JSON object from received request, and gets document from DataBase */
 $data = json_decode(file_get_contents('php://input'));

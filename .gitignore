@@ -1,2 +1,4 @@
 src/vendor
 .DS_Store
+src/app/Hydrators/*
+src/app/Proxies/*

@@ -1,7 +1,6 @@
 <?php
 
-use Documents\Order;
-use Documents\OrderItem;
+use App\Documents\Order;
 
 /** Gets JSON object from received request */
 $data = json_decode(file_get_contents('php://input'), true);

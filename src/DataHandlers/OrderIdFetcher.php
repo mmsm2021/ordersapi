@@ -1,6 +1,6 @@
 <?php
 
-use Documents\Order;
+use App\Documents\Order;
 
 /** Get the amount of orders being queried */
 $query_pos = strrpos($_SERVER['REQUEST_URI'], "/");

@@ -1,6 +1,6 @@
 <?php
 
-use Documents\Order;
+use App\Documents\Order;
 
 $query_pos = strrpos($_SERVER['REQUEST_URI'], "/");
 $id = substr($_SERVER['REQUEST_URI'], $query_pos + 1);
