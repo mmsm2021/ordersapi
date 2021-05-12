@@ -19,13 +19,13 @@ services:
             - ./src:/var/www/html
         links:
             - mongo
-#        environment:
-
     mongo:
         image: mongo
         restart: unless-stopped
         ports:
             - 27017:27017
+        volumes:
+            - ./data/mongo:/data/db
         environment:
             MONGO_INITDB_ROOT_USERNAME: mmsm-frandine-root
             MONGO_INITDB_ROOT_PASSWORD: frandine-master

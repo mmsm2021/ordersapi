@@ -5,3 +5,4 @@ src/app/Hydrators/*
 src/app/Proxies/*
 !src/app/Proxies/.gitkeep
 .idea/
+data/
