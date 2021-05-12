@@ -1,4 +1,7 @@
 src/vendor
 .DS_Store
 src/app/Hydrators/*
+!src/app/Hydrators/.gitkeep
 src/app/Proxies/*
+!src/app/Proxies/.gitkeep
+.idea/
