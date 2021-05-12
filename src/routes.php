@@ -9,5 +9,5 @@ $app->addRoutingMiddleware();
 $app->addErrorMiddleware(true, true, true);
 
 $app->group('/api', function (RouteCollectorProxy $group) {
-    $group->post('orders', Create::class);
+    $group->post('/orders', Create::class);
 });
