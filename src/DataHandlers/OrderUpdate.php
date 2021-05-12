@@ -12,8 +12,8 @@ try {
 }
 
 /** Updates data in document */
-foreach($data as $key => $value) {
-    switch($key) {
+foreach ($data as $key => $value) {
+    switch ($key) {
         case 'location':
             $order->setLocation($value);
             break;

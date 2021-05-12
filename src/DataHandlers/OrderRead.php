@@ -3,8 +3,8 @@
 use Doctrine\Common\Collections\ArrayCollection;
 use Documents\Order;
 
-$query_pos = strrpos($_SERVER['REQUEST_URI'],"/");
-$id = substr($_SERVER['REQUEST_URI'], $query_pos+1);
+$query_pos = strrpos($_SERVER['REQUEST_URI'], "/");
+$id = substr($_SERVER['REQUEST_URI'], $query_pos + 1);
 
 try {
     $order = $dm->find(Order::class, $id);
@@ -12,8 +12,7 @@ try {
     header('HTTP/1.0 500 INTERNAL SERVER ERROR');
     echo "Order could not be collected from Data Base\n",  $e->getMessage(), "\n";
 }
-if (null != $order)
-{
+if (null != $order) {
     $orderJson = new OrderJson($order);
     echo json_encode($orderJson, JSON_UNESCAPED_UNICODE);
 } else {
@@ -63,9 +62,10 @@ class OrderJson
         $this->orderDate = $order->getOrderDate();
 
         /** Each order item is put in an anonymous class and pushed to items array */
-        foreach($order->getPersistentItems()->getValues() as $item) {
-            
-            $this->items[] = new class($item) {
+        foreach ($order->getPersistentItems()->getValues() as $item) {
+
+            $this->items[] = new class($item)
+            {
                 /** Order item ID */
                 public $id;
                 /** Order item name */

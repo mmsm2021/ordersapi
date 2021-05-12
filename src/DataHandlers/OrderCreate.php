@@ -8,7 +8,7 @@ $data = json_decode(file_get_contents('php://input'), true);
 
 /** Order object is populated with relevant data */
 $order = new Order();
-foreach($data as $key => $value) {
+foreach ($data as $key => $value) {
     switch ($key) {
         case 'location':
             $order->setLocation($value);
@@ -31,8 +31,8 @@ foreach($data as $key => $value) {
         case 'total':
             $order->setTotal($value);
             break;
-      }
-      $order->setOrderDate();
+    }
+    $order->setOrderDate();
 }
 
 /** Order document is sent to DataBase */

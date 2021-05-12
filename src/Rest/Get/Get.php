@@ -4,13 +4,12 @@
 $verified = true;
 
 /** Verified requests are handled */
-if($verified) {
+if ($verified) {
     /** Detection: Is one or more "last" documents requested, or is a specific document requested */
-    if(strpos($_SERVER['REQUEST_URI'], '/api/orders/last/') !== false)
-    {
-        include(dirname(__FILE__)."/../../DataHandlers/OrderIdFetcher.php");
+    if (strpos($_SERVER['REQUEST_URI'], '/api/orders/last/') !== false) {
+        include(dirname(__FILE__) . "/../../DataHandlers/OrderIdFetcher.php");
     } else {
-        include(dirname(__FILE__)."/../../DataHandlers/OrderRead.php");
+        include(dirname(__FILE__) . "/../../DataHandlers/OrderRead.php");
     }
 } else {
     /** request denied */

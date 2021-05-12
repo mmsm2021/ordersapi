@@ -2,8 +2,8 @@
 
 use Documents\Order;
 
-$query_pos = strrpos($_SERVER['REQUEST_URI'],"/");
-$id = substr($_SERVER['REQUEST_URI'], $query_pos+1);
+$query_pos = strrpos($_SERVER['REQUEST_URI'], "/");
+$id = substr($_SERVER['REQUEST_URI'], $query_pos + 1);
 
 try {
     $order = $dm->find(Order::class, $id);

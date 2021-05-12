@@ -4,7 +4,7 @@
 $verified = true;
 
 /** Verified requests are handled */
-if($verified) {
+if ($verified) {
     http_response_code(204);
     header('Allow: GET, POST, PUT, DELETE, HEAD, OPTIONS');
 } else {
