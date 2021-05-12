@@ -10,3 +10,23 @@ Repository for orders API and orders database
 * DELETE  :: /api/orders/[id]     => will delete the specified order
 * HEAD    :: /api/orders/[id]     => will return size information on data for specified order
 * OPTIONS :: /api/orders/         => will return allowed REST methods
+
+
+* Order JSON object
+```json
+{
+    "location": "FranDine Strøget",
+    "locationId": 45,
+    "server": "Bertram Nissen",
+    "customer": "aperson@online.com",
+    "items": [
+        {
+            "nr": 69,
+            "name": "Stor fadbamse",
+            "cost": 35
+        }
+    ],
+    "discount": 20,
+    "total": 28
+}
+```
