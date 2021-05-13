@@ -19,6 +19,8 @@ services:
             - ./src:/var/www/html
         links:
             - mongo
+        env_file:
+            - ordersapi.env
     mongo:
         image: mongo
         restart: unless-stopped
