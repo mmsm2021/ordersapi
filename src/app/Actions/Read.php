@@ -5,7 +5,6 @@ namespace App\Actions;
 use App\DataModels\OrderJson;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
