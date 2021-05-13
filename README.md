@@ -3,14 +3,14 @@ Repository for orders API and orders database
 
 ## Endpoints
 
-- [x] GET     :: /api/orders/{orderId} => Returns JSON representation of order
-- [ ] GET     :: /api/orders/last/     => Returns ID of the last order created
-- [ ] GET     :: /api/orders/last/[N]  => Returns ID's of the last 'N' orders created
-- [x] POST    :: /api/orders           => Creates order carried as JSON, replies with OrderID upon success
-- [x] PATCH   :: /api/orders/{orderId} => Updates order, with changes carried as JSON
-- [x] DELETE  :: /api/orders/{orderId} => Deletes the specified order
-- [ ] HEAD    :: /api/orders/[id]      => Returns content-length
-- [ ] OPTIONS :: /api/orders/          => Returns allowed REST methods for this endpoint
+- [x] GET     :: /api/orders/{orderId}             => Returns JSON representation of order
+- [ ] GET     :: /api/orders/{locationId}/last/    => Returns ID of the last order created
+- [ ] GET     :: /api/orders/{locationId}/last/{n} => Returns ID's of the last 'n' orders created
+- [x] POST    :: /api/orders                       => Creates order carried as JSON, replies with OrderID upon success
+- [x] PATCH   :: /api/orders/{orderId}             => Updates order, with changes carried as JSON
+- [x] DELETE  :: /api/orders/{orderId}             => Deletes the specified order
+- [ ] HEAD    :: /api/orders/{id}                  => Returns content-length
+- [ ] OPTIONS :: /api/orders/                      => Returns allowed REST methods for this endpoint
 
 
 ## POST Order example JSON object
