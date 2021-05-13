@@ -8,7 +8,7 @@ Repository for orders API and orders database
 - [ ] GET     :: /api/orders/last/[N]  => Returns ID's of the last 'N' orders created
 - [x] POST    :: /api/orders           => Creates order carried as JSON, replies with OrderID upon success
 - [x] PATCH   :: /api/orders/{orderId} => Updates order, with changes carried as JSON
-- [ ] DELETE  :: /api/orders/[id]      => Deletes the specified order
+- [x] DELETE  :: /api/orders/{orderId} => Deletes the specified order
 - [ ] HEAD    :: /api/orders/[id]      => Returns content-length
 - [ ] OPTIONS :: /api/orders/          => Returns allowed REST methods for this endpoint
 
