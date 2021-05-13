@@ -42,27 +42,8 @@ class OrderJson
         $this->discount = $order->getDiscount();
         $this->total = $order->getTotal();
         $this->orderDate = $order->getOrderDate();
-
-        /** Each order item is put in an anonymous class and pushed to items array */
         foreach ($order->getPersistentItems()->getValues() as $item) {
-
-            $this->items[] = new class($item)
-            {
-                /** Order item ID */
-                public $id;
-                /** Order item name */
-                public $name;
-                /** Order item prize */
-                public $cost;
-
-                /** Constructor, assigns relevant info to all properties */
-                public function __construct($item)
-                {
-                    $this->id = $item->getId();
-                    $this->name = $item->getName();
-                    $this->cost = $item->getCost();
-                }
-            };
+            $this->items[] = new OrderItem($item);
         }
     }
 }
