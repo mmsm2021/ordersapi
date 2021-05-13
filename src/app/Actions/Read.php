@@ -25,7 +25,7 @@ class Read
         $this->responseFactory = $responseFactory;
     }
 
-    public function __invoke(Request $request, Response $response, $orderId)
+    public function __invoke(Response $response, $orderId)
     {
         try {
             $order = $this->documentManager->find(Order::class, $orderId);
