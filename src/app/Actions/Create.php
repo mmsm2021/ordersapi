@@ -15,7 +15,7 @@ class Create
 {
     /** Document manager used for persisting Document */
     private $documentManager;
-    /** User or request verification status */
+    /** Validator for validation of order contents */
     private $orderValidator;
     /** Factory for responses */
     private $responseFactory;
