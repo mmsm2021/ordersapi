@@ -17,7 +17,7 @@ class Create
     private $documentManager;
     /** User or request verification status */
     private $orderValidator;
-    /** Responsefactory */
+    /** Factory for responses */
     private $responseFactory;
 
     public function __construct(
