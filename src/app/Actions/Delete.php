@@ -26,9 +26,7 @@ class Delete
     public function __invoke(Response $response, $orderId)
     {
         try {
-            $order = $this->documentManager->find(Order::class, $orderId);
-            $this->documentManager->remove($order);
-            $this->documentManager->flush();
+            $this->documentManager->createQueryBuilder(Order::class)->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
