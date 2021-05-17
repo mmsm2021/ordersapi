@@ -13,7 +13,7 @@ class ReadLast
 {
     /** Document manager used for persisting Document */
     private $documentManager;
-    /** Factory for responses */
+    /** Factory for HTTP response */
     private $responseFactory;
 
     public function __construct(

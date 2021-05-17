@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
-class Read
+class ReadLocation
 {
     /** Document manager used for persisting Document */
     private $documentManager;
@@ -24,17 +24,36 @@ class Read
         $this->responseFactory = $responseFactory;
     }
 
-    public function __invoke(Response $response, $orderId)
+    public function __invoke(Response $response, $locationId, $sortBy, $page, $size)
     {
         try {
-            $order = $this->documentManager->find(Order::class, $orderId);
-            $order = new OrderJson($order);
-            $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE));
+            $page = $page - 1;
+            $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->sort($sortBy, 'desc')->limit($size)->skip($page * $size)->getQuery()->execute();
+            $orders = $this->ordersArray($orders);
+            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
             $response->getBody()->write($e->getMessage());
             return $response;
         }
+    }
+
+    function ordersArray($orders)
+    {
+        $ordersJson = new class($order)
+        {
+            public $orders = [];
+
+            public function addOrder($order): void
+            {
+                $this->orders[] = new OrderJson($order);
+            }
+        };
+
+        foreach ($orders as $order) {
+            $ordersJson->addOrder($order);
+        }
+        return $ordersJson;
     }
 }

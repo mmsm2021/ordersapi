@@ -17,7 +17,7 @@ class Update
     private $documentManager;
     /** Validator for validation of PATCH Document */
     private $patchValidator;
-    /** Factory for responses */
+    /** Factory for HTTP response */
     private $responseFactory;
 
     public function __construct(

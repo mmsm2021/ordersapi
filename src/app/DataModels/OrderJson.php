@@ -43,7 +43,7 @@ class OrderJson
         $this->total = $order->getTotal();
         $this->orderDate = $order->getOrderDate();
         foreach ($order->getPersistentItems()->getValues() as $item) {
-            $this->items[] = new OrderItem($item);
+            $this->items[] = new OrderItemJson($item);
         }
     }
 }

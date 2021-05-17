@@ -9,7 +9,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
-class Read
+class ReadUser
 {
     /** Document manager used for persisting Document */
     private $documentManager;
@@ -24,17 +24,35 @@ class Read
         $this->responseFactory = $responseFactory;
     }
 
-    public function __invoke(Response $response, $orderId)
+    public function __invoke(Response $response, $userId)
     {
         try {
-            $order = $this->documentManager->find(Order::class, $orderId);
-            $order = new OrderJson($order);
-            $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE));
+            $orders = $this->documentManager->getRepository(Order::class)->findBy(['customer' => $userId]);
+            $orders = $this->ordersArray($orders);
+            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
             $response->getBody()->write($e->getMessage());
             return $response;
         }
+    }
+
+    function ordersArray($orders)
+    {
+        $ordersJson = new class($order)
+        {
+            public $orders = [];
+
+            public function addOrder($order): void
+            {
+                $this->orders[] = new OrderJson($order);
+            }
+        };
+
+        foreach ($orders as $order) {
+            $ordersJson->addOrder($order);
+        }
+        return $ordersJson;
     }
 }

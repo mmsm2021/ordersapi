@@ -17,7 +17,7 @@ class Create
     private $documentManager;
     /** Validator for validation of order contents */
     private $orderValidator;
-    /** Factory for responses */
+    /** Factory for HTTP response */
     private $responseFactory;
 
     public function __construct(

@@ -2,7 +2,7 @@
 
 namespace App\DataModels;
 
-class OrderItem
+class OrderItemJson
 {
     /** Order item ID */
     public $id;
