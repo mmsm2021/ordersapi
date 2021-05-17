@@ -29,7 +29,7 @@ class ReadUser
         try {
             $orders = $this->documentManager->getRepository(Order::class)->findBy(['customer' => $userId]);
             $orders = $this->ordersArray($orders);
-            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE));
+            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
@@ -40,19 +40,31 @@ class ReadUser
 
     function ordersArray($orders)
     {
-        $ordersJson = new class($order)
-        {
-            public $orders = [];
-
-            public function addOrder($order): void
-            {
-                $this->orders[] = new OrderJson($order);
-            }
-        };
+        $ordersArray = [];
 
         foreach ($orders as $order) {
-            $ordersJson->addOrder($order);
+            $itemsArray = [];
+            $items = $order->getPersistentItems()->getValues();
+            foreach ($items as $item) {
+                $itemsArray[] = [
+                    'id' => $item->getId(),
+                    'name' => $item->getName(),
+                    'cost' => $item->getCost()
+                ];
+            }
+
+            $ordersArray[] = [
+                'orderId' => $order->getOrderID(),
+                'location'  => $order->getLocation(),
+                'locationId'  => $order->getLocationId(),
+                'server'  => $order->getServer(),
+                'customer'  => $order->getCustomer(),
+                'items'  => $itemsArray,
+                'discount'  => $order->getDiscount(),
+                'total'  => $order->getTotal(),
+                'orderDate'  => $order->getOrderDate()
+            ];
         }
-        return $ordersJson;
+        return $ordersArray;
     }
 }

@@ -30,7 +30,7 @@ class ReadLocation
             $page = $page - 1;
             $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->sort($sortBy, 'desc')->limit($size)->skip($page * $size)->getQuery()->execute();
             $orders = $this->ordersArray($orders);
-            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE));
+            $response->getBody()->write(json_encode(['orders' => $orders], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
@@ -41,19 +41,31 @@ class ReadLocation
 
     function ordersArray($orders)
     {
-        $ordersJson = new class($order)
-        {
-            public $orders = [];
-
-            public function addOrder($order): void
-            {
-                $this->orders[] = new OrderJson($order);
-            }
-        };
+        $ordersArray = [];
 
         foreach ($orders as $order) {
-            $ordersJson->addOrder($order);
+            $itemsArray = [];
+            $items = $order->getPersistentItems()->getValues();
+            foreach ($items as $item) {
+                $itemsArray[] = [
+                    'id' => $item->getId(),
+                    'name' => $item->getName(),
+                    'cost' => $item->getCost()
+                ];
+            }
+
+            $ordersArray[] = [
+                'orderId' => $order->getOrderID(),
+                'location'  => $order->getLocation(),
+                'locationId'  => $order->getLocationId(),
+                'server'  => $order->getServer(),
+                'customer'  => $order->getCustomer(),
+                'items'  => $itemsArray,
+                'discount'  => $order->getDiscount(),
+                'total'  => $order->getTotal(),
+                'orderDate'  => $order->getOrderDate()
+            ];
         }
-        return $ordersJson;
+        return $ordersArray;
     }
 }

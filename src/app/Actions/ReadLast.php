@@ -30,7 +30,7 @@ class ReadLast
             $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
             $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->skip($count - $n)->getQuery()->execute();
             $orders = $this->ordersArray($orders);
-            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE));
+            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
@@ -41,19 +41,31 @@ class ReadLast
 
     function ordersArray($orders)
     {
-        $ordersJson = new class($order)
-        {
-            public $orders = [];
-
-            public function addOrder($order): void
-            {
-                $this->orders[] = $order;
-            }
-        };
+        $ordersArray = [];
 
         foreach ($orders as $order) {
-            $ordersJson->addOrder($order->getOrderID());
+            $itemsArray = [];
+            $items = $order->getPersistentItems()->getValues();
+            foreach ($items as $item) {
+                $itemsArray[] = [
+                    'id' => $item->getId(),
+                    'name' => $item->getName(),
+                    'cost' => $item->getCost()
+                ];
+            }
+
+            $ordersArray[] = [
+                'orderId' => $order->getOrderID(),
+                'location'  => $order->getLocation(),
+                'locationId'  => $order->getLocationId(),
+                'server'  => $order->getServer(),
+                'customer'  => $order->getCustomer(),
+                'items'  => $itemsArray,
+                'discount'  => $order->getDiscount(),
+                'total'  => $order->getTotal(),
+                'orderDate'  => $order->getOrderDate()
+            ];
         }
-        return $ordersJson;
+        return $ordersArray;
     }
 }

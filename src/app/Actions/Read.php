@@ -29,7 +29,7 @@ class Read
         try {
             $order = $this->documentManager->find(Order::class, $orderId);
             $order = new OrderJson($order);
-            $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE));
+            $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
