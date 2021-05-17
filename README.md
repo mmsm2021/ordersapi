@@ -9,12 +9,13 @@ Repository for orders API and orders database
 - [x] GET     :: /api/orders/{userId}/all                       => Returns all orders for user
 - [x] POST    :: /api/orders                                    => Creates order carried as JSON, replies with OrderID upon success
 - [x] PATCH   :: /api/orders/{orderId}                          => Updates order, with changes carried as JSON
+- [x] PATCH   :: /api/orders/delivered/{orderId}                => Updates orderitems marked as delivered, setting time of delivery
 - [x] DELETE  :: /api/orders/{orderId}                          => Deletes the specified order
 - [ ] HEAD    :: /api/orders/{id}                               => Returns content-length
 - [ ] OPTIONS :: /api/orders/                                   => Returns allowed REST methods for this endpoint
 
 
-## POST Order example JSON object
+#### POST Order example JSON object
 ```json
 {
     "location": "FranDine Strøget",
@@ -38,22 +39,31 @@ Repository for orders API and orders database
 }
 ```
 
-## PUT Order example JSON object
+#### PATCH Order example JSON object /api/orders/{60a2580b6eac0d0e0501ed5b}
+#### updating order items on order
 ```json
 {
-    "orderId": "6098fe8cc369136a2016f127",
-    "server": "Jokum Jespersen",
     "items": [
         {
-            "nr": 35,
-            "name": "Weggie Burger",
-            "cost": 45
-        },
-        {
-            "nr": 15,
-            "name": "Stor fadøl, Carls Classic",
-            "cost": 25
+            "itemUUID": "60a2aea33b60283dc84b4eb2",
+            "nr": 30,
+            "name": "Cheseburger",
+            "cost": 35
         }
+    ]
+}
+```
+
+#### PATCH Order example JSON object for /api/orders/delivered/{60a2580b6eac0d0e0501ed5b}
+#### updating delivery status for order item
+```json
+{
+    "items": [
+        {
+            "itemUUID": "60a2580b6eac0d0e0501ed5d35",
+            "delivered": true
+        }
+
     ]
 }
 ```

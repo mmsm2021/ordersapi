@@ -54,7 +54,7 @@ class Order
     /** Constructor */
     public function __construct()
     {
-        $this->items = new ArrayCollection();
+        $this->items = [];
     }
 
     /** Order ID getter */
@@ -103,10 +103,46 @@ class Order
         $this->customer = $customer;
     }
 
-    /** Order Items array getter and setter */
-    public function getItems(): Collection
+    /** Order Item getter and setter */
+    public function getItem($itemUUID): ?OrderItem
     {
-        return $this->items;
+        foreach ($this->getItems() as $item) {
+            if ($itemUUID == $item->getUUID) {
+                return $item;
+            }
+        }
+        return null;
+    }
+    public function setItem($item): void
+    {
+        foreach ($this->getItems() as $oldItem) {
+            if ($item->getUUID() != null && $oldItem->getUUID() != null && $item->getUUID() == $oldItem->getUUID()) {
+                $this->removeItem($oldItem->getUUID());
+            }
+        }
+        $this->items[] = $item;
+    }
+
+    /** Removes order item from array of order items */
+    private function removeItem($itemUUID): void
+    {
+        $remainingItems = [];
+        foreach ($this->getItems() as $item) {
+            if ($itemUUID != $item->getUUID()) {
+                $remainingItems[] = $item;
+            }
+        }
+        $this->items = $remainingItems;
+    }
+
+    /** Order Items array getter and setter */
+    public function getItems(): array
+    {
+        $sendBack = [];
+        foreach ($this->items as $item) {
+            $sendBack[] = $item;
+        }
+        return $sendBack;
     }
     public function addItems($items)
     {
@@ -114,14 +150,20 @@ class Order
             $orderItem = new OrderItem();
             foreach ($item as $key => $value) {
                 switch ($key) {
+                    case 'itemUUID':
+                        $orderItem->setUUID($value);
+                        break;
                     case 'nr':
-                        $orderItem->setId($value);
+                        $orderItem->setNr($value);
                         break;
                     case 'name':
                         $orderItem->setName($value);
                         break;
                     case 'cost':
                         $orderItem->setCost($value);
+                        break;
+                    case 'delivered':
+                        $orderItem->setDeliveredStatus($value);
                         break;
                 }
             }

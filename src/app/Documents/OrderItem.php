@@ -2,14 +2,21 @@
 
 namespace App\Documents;
 
+use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Ramsey\Uuid\Generator\RandomBytesGenerator;
+use Ramsey\Uuid\Uuid;
 
 /** @ODM\EmbeddedDocument */
 class OrderItem
 {
-    /** Order item ID */
+    /** Item UUID */
+    /** @ODM\Id(type="string") */
+    private $itemUUID;
+
+    /** Product Nr */
     /** @ODM\Field(type="int") */
-    private $id;
+    private $nr;
 
     /** Order item name */
     /** @ODM\Field(type="string") */
@@ -19,14 +26,33 @@ class OrderItem
     /** @ODM\Field(type="int") */
     private $cost;
 
-    /** Order item getter and setter */
-    public function getId(): int
+    /** Delivery status for the order, null if not delivered, DateTime object if delivered */
+    /** @ODM\Field(type="date") */
+    private ?DateTime $delivered = null;
+
+    /** Order item Unique identifier getter and setter */
+    public function getUUID(): ?string
     {
-        return $this->id;
+        return $this->itemUUID;
     }
-    public function setId(int $id): void
+
+    public function setUUID($itemUUID): void
     {
-        $this->id = $id;
+        if (null == $itemUUID) {
+            $this->itemUUID = Uuid::uuid4();
+        } else {
+            $this->itemUUID = $itemUUID;
+        }
+    }
+
+    /** Order item getter and setter */
+    public function getNr(): int
+    {
+        return $this->nr;
+    }
+    public function setNr(int $nr): void
+    {
+        $this->nr = $nr;
     }
 
     /** Order item getter and setter */
@@ -47,5 +73,19 @@ class OrderItem
     public function setCost(int $cost): void
     {
         $this->cost = $cost;
+    }
+
+    /** Order item delivery status getter and setter */
+    public function getDeliveredStatus(): ?DateTime
+    {
+        return $this->delivered;
+    }
+    public function setDeliveredStatus(DateTime $dateTime): void
+    {
+        $this->delivered = $dateTime;
+    }
+    public function setDeliveredTrue($deliveryTime): void
+    {
+        $this->delivered = $deliveryTime;
     }
 }

@@ -11,7 +11,8 @@ class OrderBuilder
         $items = $order->getPersistentItems()->getValues();
         foreach ($items as $item) {
             $itemsArray[] = [
-                'id' => $item->getId(),
+                'itemUUID' => $item->getUUID(),
+                'nr' => $item->getNr(),
                 'name' => $item->getName(),
                 'cost' => $item->getCost()
             ];

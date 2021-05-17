@@ -7,6 +7,7 @@ use App\Actions\ReadLast;
 use App\Actions\ReadLocation;
 use App\Actions\ReadUser;
 use App\Actions\Update;
+use App\Actions\Delivered;
 use App\Actions\Delete;
 use App\Middlewares\JsonBodyParserMiddleware;
 
@@ -22,5 +23,6 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     $group->get('/orders/location/{locationId}/{sortBy}/{page}/{size}', ReadLocation::class);
     $group->get('/orders/user/{userId}/all', ReadUser::class);
     $group->patch('/orders/{orderId}', Update::class)->add(JsonBodyParserMiddleware::class);
+    $group->patch('/orders/delivered/{orderId}', Delivered::class)->add(JsonBodyParserMiddleware::class);
     $group->delete('/orders/{orderId}', Delete::class);
 });
