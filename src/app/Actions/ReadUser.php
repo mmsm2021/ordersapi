@@ -2,8 +2,8 @@
 
 namespace App\Actions;
 
-use App\DataModels\OrderJson;
 use App\Documents\Order;
+use App\DTO\ArrayBuilder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -28,8 +28,9 @@ class ReadUser
     {
         try {
             $orders = $this->documentManager->getRepository(Order::class)->findBy(['customer' => $userId]);
-            $orders = $this->ordersArray($orders);
-            $response->getBody()->write(json_encode($orders, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $arrayBuilder = new ArrayBuilder();
+            $orders = $arrayBuilder->ordersArray($orders);
+            $response->getBody()->write(json_encode(['orders' => $orders], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);
