@@ -4,7 +4,7 @@ Repository for orders API and orders database
 ## Endpoints
 
 - [x] GET     :: /api/orders/{orderId}                          => Returns JSON representation of order
-- [ ] GET     :: /api/orders/{locationId}/{sort}/{page}/{size}  => Returns all location orders sorted, on pages, with given size
+- [ ] GET     :: /api/orders/{locationId}/{sortBy}/{page}/{size}  => Returns all location orders sorted, on pages, with given size
 - [x] GET     :: /api/orders/{locationId}/last/{n}              => Returns ID's of the last 'n' orders created
 - [x] GET     :: /api/orders/{userId}/all                       => Returns all orders for user
 - [x] POST    :: /api/orders                                    => Creates order carried as JSON, replies with OrderID upon success
