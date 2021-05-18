@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Documents\Order;
-use App\Documents\OrderItem;
 use App\DTO\Validators\PatchValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ServerRequestInterface as Request;

@@ -2,8 +2,6 @@
 
 namespace App\Documents;
 
-use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use DateTime;
 
@@ -55,6 +53,35 @@ class Order
     public function __construct()
     {
         $this->items = [];
+    }
+
+    public function toArray()
+    {
+        $orderArray = [];
+        $itemsArray = [];
+
+        foreach ($this->items as $item) {
+            $itemsArray[] = [
+                'itemUUID' => $item->getUUID(),
+                'nr' => $item->getNr(),
+                'name' => $item->getName(),
+                'cost' => $item->getCost(),
+                'delivered' => $item->getDeliveredStatus()
+            ];
+        }
+
+        $orderArray[] = [
+            'orderId' => $this->getOrderID(),
+            'location'  => $this->getLocation(),
+            'locationId'  => $this->getLocationId(),
+            'server'  => $this->getServer(),
+            'customer'  => $this->getCustomer(),
+            'items'  => $itemsArray,
+            'discount'  => $this->getDiscount(),
+            'total'  => $this->getTotal(),
+            'orderDate'  => $this->getOrderDate()
+        ];
+        return $orderArray;
     }
 
     /** Order ID getter */
@@ -121,18 +148,6 @@ class Order
             }
         }
         $this->items[] = $item;
-    }
-
-    /** Removes order item from array of order items */
-    private function removeItem($itemUUID): void
-    {
-        $remainingItems = [];
-        foreach ($this->getItems() as $item) {
-            if ($itemUUID != $item->getUUID()) {
-                $remainingItems[] = $item;
-            }
-        }
-        $this->items = $remainingItems;
     }
 
     /** Order Items array getter and setter */
@@ -207,5 +222,17 @@ class Order
     public function setOrderDate(): void
     {
         $this->orderDate = new DateTime();
+    }
+
+    /** Removes order item from array of order items */
+    private function removeItem($itemUUID): void
+    {
+        $remainingItems = [];
+        foreach ($this->getItems() as $item) {
+            if ($itemUUID != $item->getUUID()) {
+                $remainingItems[] = $item;
+            }
+        }
+        $this->items = $remainingItems;
     }
 }

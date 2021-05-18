@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Documents\Order;
-use App\DTO\ArrayBuilder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -29,9 +28,11 @@ class ReadLast
         try {
             $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
             $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->skip($count - $n)->getQuery()->execute();
-            $arrayBuilder = new ArrayBuilder();
-            $orders = $arrayBuilder->ordersArray($orders);
-            $response->getBody()->write(json_encode(['orders' => $orders], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
+            $sendBack = [];
+            foreach ($orders as $order) {
+                $sendBack[] = $order->toArray();
+            }
+            $response->getBody()->write(json_encode(['orders' => $sendBack], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
             $response = $this->responseFactory->createResponse(400);

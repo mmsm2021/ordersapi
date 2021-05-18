@@ -3,7 +3,6 @@
 namespace App\Actions;
 
 use App\Documents\Order;
-use App\DTO\OrderBuilder;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
@@ -28,8 +27,7 @@ class Read
     {
         try {
             $order = $this->documentManager->find(Order::class, $orderId);
-            $arrayBuilder = new OrderBuilder();
-            $order = $arrayBuilder->ordersArray($order);
+            $order = $order->toArray();
             $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
             return $response;
         } catch (Throwable $e) {
