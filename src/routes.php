@@ -1,5 +1,9 @@
 <?php
 
+/**
+ * @OA\Info(title="OrdersAPI", version="1.0.0")
+ */
+
 use Slim\Routing\RouteCollectorProxy;
 use App\Actions\Create;
 use App\Actions\Read;
@@ -9,7 +13,9 @@ use App\Actions\ReadUser;
 use App\Actions\Update;
 use App\Actions\Delivered;
 use App\Actions\Delete;
+use App\Actions\SwaggerJson;
 use App\Middlewares\JsonBodyParserMiddleware;
+use OpenApi\Annotations as OA;
 
 /** @var \Slim\App $app */
 
@@ -26,3 +32,5 @@ $app->group('/api', function (RouteCollectorProxy $group) {
     $group->patch('/orders/delivered/{orderId}', Delivered::class)->add(JsonBodyParserMiddleware::class);
     $group->delete('/orders/{orderId}', Delete::class);
 });
+
+$app->get('/swagger.json', SwaggerJson::class);

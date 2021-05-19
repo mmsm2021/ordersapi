@@ -6,6 +6,8 @@ use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
 
+define('ROOT_DIR', __DIR__);
+
 return [
     'mongo.uri' => \DI\env('MONGO_URI'),
     Client::class => function (ContainerInterface $container) {

@@ -23,6 +23,23 @@ class Read
         $this->responseFactory = $responseFactory;
     }
 
+    /**
+     * @OA\Get(
+     *     path="/api/orders",
+     *     summary="Reads requested order from database",
+     *     description="Returns a JSON representation of the requested order",
+     *     @OA\Response(
+     *           response=200,
+     *           description="successful operation",
+     *           @OA\JsonContent(ref="#/components/schemas/Order"),
+     *          )
+     *     ), 
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request"
+     *     )   
+     * )
+     */
     public function __invoke(Response $response, $orderId)
     {
         try {

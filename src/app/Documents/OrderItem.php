@@ -7,27 +7,54 @@ use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
 use Ramsey\Uuid\Generator\RandomBytesGenerator;
 use Ramsey\Uuid\Uuid;
 
-/** @ODM\EmbeddedDocument */
+/** 
+ * @ODM\EmbeddedDocument
+ * @OA\Schema(
+ *   schema="OrderItem",
+ *   type="object",
+ *   description="Order item object",
+ * )
+ */
 class OrderItem
 {
-    /** Item UUID */
-    /** @ODM\Id(type="string") */
+    /**
+     * Item unique ID on order
+     * @ODM\Id(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $itemUUID;
 
-    /** Product Nr */
-    /** @ODM\Field(type="int") */
+    /**
+     * Order item number on menu
+     * @ODM\Id(type="int")
+     * @var int
+     * @OA\Property()
+     */
     private $nr;
 
-    /** Order item name */
-    /** @ODM\Field(type="string") */
+    /**
+     * Order item name
+     * @ODM\Id(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $name;
 
-    /** Order item prize */
-    /** @ODM\Field(type="int") */
+    /**
+     * Order item prize
+     * @ODM\Id(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $cost;
 
-    /** Delivery status for the order, null if not delivered, DateTime object if delivered */
-    /** @ODM\Field(type="date") */
+    /**
+     * Order item delivery status
+     * @ODM\Field(type="date")
+     * @var object
+     * @OA\Property()
+     */
     private ?DateTime $delivered = null;
 
     /** Order item Unique identifier getter and setter */

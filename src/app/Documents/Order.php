@@ -9,45 +9,93 @@ use DateTime;
  * Representation of an Order Document in MongoDB
  *
  * @author  NINLeviathan
+ * @ODM\Document(collection="Orders")
+ *  
+ * @OA\Schema(
+ *   schema="Order",
+ *   type="object",
+ *   description="Order object",
+ *   
+ * )
  */
-/** @ODM\Document(collection="Orders") */
+
 class Order
 {
-    /** Order ID */
-    /** @ODM\Id(type="string") */
+    /**
+     * Order ID
+     * @ODM\Id(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $orderId;
 
-    /** Location Name */
-    /** @ODM\Field(type="string") */
+    /**
+     * Location Name
+     * @ODM\Field(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $location = 0;
 
-    /** Location ID */
-    /** @ODM\Field(type="int") */
+    /**
+     * Location ID
+     * @ODM\Field(type="int")
+     * @var int
+     * @OA\Property()
+     */
     private $locationId;
 
-    /** Name or ID of waitress or waiter */
-    /** @ODM\Field(type="string") */
+    /**
+     * Name or ID of waitress or waiter
+     * @ODM\Field(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $server;
 
-    /** Name or ID of customer */
-    /** @ODM\Field(type="string") */
+    /**
+     * Name or ID of customer
+     * @ODM\Field(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $customer;
 
-    /** Array of items purchased */
-    /** @ODM\EmbedMany) */
+    /**
+     * Array of items purchased
+     * @ODM\Field(type="EmbedMany")
+     * @var array
+     * @OA\Property(
+     *  @OA\Items(
+     *   ref="#/components/schemas/OrderItem"
+     *  )
+     * )
+     */
     private $items = [];
 
-    /** Discount percentage given on order */
-    /** @ODM\Field(type="int") */
+    /**
+     * Discount percenntage given on order
+     * @ODM\Field(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $discount;
 
-    /** Amount total payed for order */
-    /** @ODM\Field(type="int") */
+    /**
+     * Amount total payed for order
+     * @ODM\Field(type="string")
+     * @var string
+     * @OA\Property()
+     */
     private $total;
 
-    /** Date of order */
-    /** @ODM\Field(type="date") */
-    private $orderDate;
+    /**
+     * Date the order was placed
+     * @ODM\Field(type="date")
+     * @var object
+     * @OA\Property()
+     */
+    private DateTime $orderDate;
 
     /** Constructor */
     public function __construct()

@@ -30,6 +30,82 @@ class Create
         $this->responseFactory = $responseFactory;
     }
 
+    /**
+     * @OA\Post(
+     *     path="/api/orders",
+     *     summary="Creates new order from carried JSON",
+     *     description="Order details are to be carried as JSON in requestbody , if/when validated this object is used for creation of new order",
+     *     @OA\RequestBody(
+     *             @OA\MediaType(
+     *             mediaType="application/json",
+     *             @OA\Schema(
+     *                 type="object",
+     *                 @OA\Property(
+     *                     property="location",
+     *                     description="Name of the location where the order was placed",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="locationId",
+     *                     description="The identifying number of the location at which the order was placed",
+     *                     type="number"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="server",
+     *                     description="The name of the Waiter/Waitress serving the order",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="customer",
+     *                     description="The identifyer for the customer who placed the order",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="items",
+     *                     description="Array holding the items purchased on the order",
+     *                     type="array",
+     *                     @OA\Items(
+     *                         @OA\Property(
+     *                              property="nr",
+     *                              description="The item menu number",
+     *                              type="number"
+     *                          ),
+     *                         @OA\Property(
+     *                              property="name",
+     *                              description="Name of the item",
+     *                              type="string"
+     *                          ),
+     *                         @OA\Property(
+     *                              property="cost",
+     *                              description="Prize of the item",
+     *                              type="number"
+     *                          )
+     *                     )
+     *                 ),
+     *                 @OA\Property(
+     *                     property="discount",
+     *                     description="The discount percentage applied on the order",
+     *                     type="string"
+     *                 ),
+     *                 @OA\Property(
+     *                     property="total",
+     *                     description="The total amount payed for the order",
+     *                     type="string"
+     *                 )
+     *             )
+     *         ),
+     *         required=true,
+     *     ),
+     *     @OA\Response(
+     *         response=200,
+     *         description="Will reply with the orderId of the newly created order",
+     *     ), 
+     *     @OA\Response(
+     *         response=400,
+     *         description="Bad Request"
+     *     )   
+     * )
+     */
     public function __invoke(Request $request, Response $response)
     {
         try {
