@@ -4,7 +4,8 @@
         "php-di/slim-bridge": "^3.1",
         "slim/psr7": "^1.4",
         "respect/validation": "^2.2",
-        "ramsey/uuid": "^4.1"
+        "ramsey/uuid": "^4.1",
+        "mmsm/service-lib": "^1.1"
     },
     "autoload": {
         "psr-4": {
@@ -14,5 +15,11 @@
     "require-dev": {
         "symfony/var-dumper": "^5.2",
         "zircote/swagger-php": "^3.1"
-    }
+    },
+    "repositories": [
+        {
+            "type": "github",
+            "url": "https://github.com/mmsm2021/service-lib.git"
+        }
+    ]
 }

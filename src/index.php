@@ -8,7 +8,8 @@ $containerBuilder = new \DI\ContainerBuilder();
 
 $containerBuilder->addDefinitions(__DIR__ . '/definitions.php');
 
-$app = \DI\Bridge\Slim\Bridge::create($containerBuilder->build());
+$container = $containerBuilder->build();
+$app = \DI\Bridge\Slim\Bridge::create($container);
 
 require_once __DIR__ . '/routes.php';
 

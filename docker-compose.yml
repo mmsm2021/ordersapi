@@ -19,8 +19,9 @@ services:
             - ./src:/var/www/html
         links:
             - mongo
-        env_file:
-            - ordersapi.env
+        environment:
+            MONGO_URI: mongodb://FranDineReadWrite:ReadWritePassword@mongo
+            JWK_URI: https://mmsm.eu.auth0.com/.well-known/jwks.json
     mongo:
         image: mongo
         restart: unless-stopped
