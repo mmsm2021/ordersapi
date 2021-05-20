@@ -11,8 +11,12 @@ use MMSM\Lib\Validators\JWKValidator;
 use MMSM\Lib\Validators\JWTValidator;
 use MongoDB\Client;
 use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseFactoryInterface;
 use Slim\Middleware\BodyParsingMiddleware;
+use Slim\Psr7\Factory\ResponseFactory;
+
 use function DI\env;
+use function DI\create;
 
 define('ROOT_DIR', __DIR__);
 
@@ -66,4 +70,5 @@ return [
             'application/xml' => $xmlBodyParser,
         ]);
     },
+    ResponseFactoryInterface::class => create(ResponseFactory::class),
 ];

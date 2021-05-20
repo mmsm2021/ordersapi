@@ -4,20 +4,37 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
+use SimpleJWT\JWT;
+use Slim\Exception\HttpException;
+use Slim\Exception\HttpUnauthorizedException;
 use Slim\Psr7\Factory\ResponseFactory;
+use Slim\Psr7\Request;
 use Throwable;
 
 class Read
 {
-    /** Document manager used for persisting Document */
+    /**
+     * Document manager used for persisting Document
+     * @var DocumentManager
+     */
     private $documentManager;
-    /** Factory for HTTP response */
-    private $responseFactory;
 
+    /**
+     * Factory for JSON HTTP response
+     * @var JsonResponseFactory
+     */
+    private JsonResponseFactory $responseFactory;
+
+    /**
+     * Read constructor.
+     * @param DocumentManager $documentManager
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
@@ -25,7 +42,7 @@ class Read
 
     /**
      * @OA\Get(
-     *     path="/api/orders",
+     *     path="/api/v1/orders",
      *     summary="Reads requested order from database",
      *     description="Returns a JSON representation of the requested order",
      *     @OA\Response(
@@ -40,17 +57,29 @@ class Read
      *     )   
      * )
      */
-    public function __invoke(Response $response, $orderId)
+    public function __invoke(Request $request, Response $response, $orderId)
     {
         try {
+            $token = $request->getAttribute('token');
+            if (!($token instanceof JWT)) {
+                throw new HttpUnauthorizedException($request, 'Unauthorized');
+            }
             $order = $this->documentManager->find(Order::class, $orderId);
-            $order = $order->toArray();
-            $response->getBody()->write(json_encode($order, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return $response;
+            if ($order instanceof Order) {
+                return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
+            }
+            return $this->responseFactory->create(404, [
+                'error' => true,
+                'message' => 'Order not found / Does not exist',
+            ]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            if ($e instanceof HttpException) {
+                throw $e;
+            }
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }

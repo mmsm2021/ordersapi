@@ -69,6 +69,13 @@ class Order
     private $items = [];
 
     /**
+     * Order status
+     * @var int
+     * OA\Property
+     */
+    private $orderStatus;
+
+    /**
      * Discount percenntage given on order
      * @var string
      * @OA\Property()
@@ -117,6 +124,7 @@ class Order
             'server'  => $this->getServer(),
             'customer'  => $this->getCustomer(),
             'items'  => $itemsArray,
+            'orderStatus' => $this->getOrderStatus(),
             'discount'  => $this->getDiscount(),
             'total'  => $this->getTotal(),
             'orderDate'  => $this->getOrderDate()
@@ -234,6 +242,16 @@ class Order
         $this->items = [];
     }
 
+    /** Order status getter and setter */
+    public function getOrderStatus(): int
+    {
+        return $this->orderStatus;
+    }
+    public function setOrderStatus($status): void
+    {
+        $this->orderStatus = $status != null ? $status : 1;
+    }
+
     /** Discount getter and setter */
     public function getDiscount(): ?int
     {
@@ -313,6 +331,12 @@ class Order
         $metadata->mapManyEmbedded([
             'name' => 'items',
             'targetDocument' => OrderItem::class
+        ]);
+        $metadata->mapField([
+            'name' => 'orderStatus',
+            'id' => false,
+            'type' => Type::INT,
+            'nullable' => false
         ]);
         $metadata->mapField([
             'name' => 'discount',

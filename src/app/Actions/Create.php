@@ -5,25 +5,37 @@ namespace App\Actions;
 use App\Documents\Order;
 use App\DTO\Validators\OrderValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
-use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
+
+use function DI\create;
 
 class Create
 {
-    /** Document manager used for persisting Document */
-    private $documentManager;
-    /** Validator for validation of order contents */
+    /**
+     * Document manager used for persisting and reading Documents
+     * @var DocumentManager
+     */
+    private DocumentManager $documentManager;
+
+    /**
+     * Validator for validation of order contents
+     */
     private $orderValidator;
-    /** Factory for HTTP response */
-    private $responseFactory;
+
+    /**
+     * Factory for JSON HTTP response
+     * @var JsonResponseFactory
+     */
+    private JsonResponseFactory $responseFactory;
 
     public function __construct(
         DocumentManager $documentManager,
         OrderValidator $orderValidator,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->orderValidator = $orderValidator;
@@ -110,25 +122,30 @@ class Create
     {
         try {
             $this->orderValidator->validate($request->getParsedBody());
-            $order = $this->createOrder($request->getParsedBody());
+            $token = $request->getAttribute('token');
+            $order = $this->createOrder($token, $request->getParsedBody());
             $this->documentManager->persist($order);
             $this->documentManager->flush();
-            $response->getBody()->write($order->getOrderId());
-            return $response;
+            return $this->responseFactory->create(200, ['orderId' => $order->getOrderId()]);
         } catch (ValidationException $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(500);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(500, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 
-    function createOrder($data)
+    function createOrder($token, $data)
     {
         $order = new Order();
+        $order->setCustomer($token->getClaims()['sub']);
+        $order->setOrderStatus(1);
+        $order->setOrderStatus(1);
         foreach ($data as $key => $value) {
             switch ($key) {
                 case 'location':
@@ -139,9 +156,6 @@ class Create
                     break;
                 case 'server':
                     $order->setServer($value);
-                    break;
-                case 'customer':
-                    $order->setCustomer($value);
                     break;
                 case 'items':
                     $order->addItems($value);

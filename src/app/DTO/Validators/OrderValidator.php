@@ -18,7 +18,7 @@ class OrderValidator
             ->key('location', v::stringType()->notEmpty(), true)
             ->key('locationId', v::intType()->notEmpty(), true)
             ->key('server', v::stringType()->notEmpty(), true)
-            ->key('customer', v::stringType()->notEmpty(), true)
+            #->key('customer', v::stringType()->notEmpty(), true)
             ->key('items', v::ArrayType()->notEmpty(), true)
             ->key('discount', v::intType()->notEmpty(), true)
             ->key('total', v::intType()->notEmpty(), true)
