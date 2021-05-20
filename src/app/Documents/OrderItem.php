@@ -110,6 +110,20 @@ class OrderItem
         $this->delivered = $deliveryTime;
     }
 
+    /** Returns items as array */
+    public function toArray()
+    {
+        $itemArray[] = [
+            'itemUUID' => $this->getUUID(),
+            'nr'  => $this->getNr(),
+            'name'  => $this->getName(),
+            'cost'  => $this->getCost(),
+            'delivered'  => $this->getDeliveredStatus(),
+        ];
+        return $itemArray;
+    }
+
+    /** Mapping of document */
     public static function loadMetaData(ClassMetadata $metadata)
     {
         $metadata->isEmbeddedDocument = true;

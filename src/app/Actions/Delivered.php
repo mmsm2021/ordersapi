@@ -10,6 +10,7 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
 use Slim\Psr7\Factory\ResponseFactory;
 use DateTime;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Throwable;
 
 class Delivered
@@ -26,14 +27,15 @@ class Delivered
     private $patchValidator;
 
     /**
-     * Factory for HTTP response
+     * Factory for JSON HTTP response
+     * @var JsonResponseFactory
      */
-    private $responseFactory;
+    private JsonResponseFactory $responseFactory;
 
     public function __construct(
         DocumentManager $documentManager,
         PatchValidator $patchValidator,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
@@ -48,15 +50,19 @@ class Delivered
             $order = $this->updater($request->getParsedBody()['items'], $order);
             $this->documentManager->persist($order);
             $this->documentManager->flush();
-            return $response;
+            return $this->responseFactory->create(200, [
+                'items' => $order->getItemsArray()
+            ]);
         } catch (ValidationException $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 

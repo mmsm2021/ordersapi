@@ -198,7 +198,7 @@ class Order
         $this->items[] = $item;
     }
 
-    /** Order Items array getter and setter */
+    /** Returns order item objects in an array */
     public function getItems(): array
     {
         $sendBack = [];
@@ -207,6 +207,18 @@ class Order
         }
         return $sendBack;
     }
+
+    /** Returns order items as arrays in array */
+    public function getItemsArray(): array
+    {
+        $sendBack = [];
+        foreach ($this->items as $item) {
+            $sendBack[] = $item->toArray();
+        }
+        return $sendBack;
+    }
+
+    /** Adds an order item to the order */
     public function addItems($items)
     {
         foreach ($items as $item) {
@@ -233,10 +245,13 @@ class Order
             $this->items[] = $orderItem;
         }
     }
+
     public function getPersistentItems()
     {
         return $this->items;
     }
+
+    /** Clears the list of items */
     public function clearItems(): void
     {
         $this->items = [];
@@ -294,6 +309,7 @@ class Order
         $this->items = $remainingItems;
     }
 
+    /** Mapping of document */
     public static function loadMetaData(ClassMetadata $metadata)
     {
         $metadata->setDatabase('FranDine');
