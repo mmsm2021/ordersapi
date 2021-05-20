@@ -1267,21 +1267,22 @@
         },
         {
             "name": "mmsm/service-lib",
-            "version": "1.1.1",
+            "version": "1.2.1",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mmsm2021/service-lib.git",
-                "reference": "e2bf0a612cb6eeee3b91281e6e3c3379cc845d20"
+                "reference": "b356f342db148118e95024cb3580c5aebbda38b6"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmsm2021/service-lib/zipball/e2bf0a612cb6eeee3b91281e6e3c3379cc845d20",
-                "reference": "e2bf0a612cb6eeee3b91281e6e3c3379cc845d20",
+                "url": "https://api.github.com/repos/mmsm2021/service-lib/zipball/b356f342db148118e95024cb3580c5aebbda38b6",
+                "reference": "b356f342db148118e95024cb3580c5aebbda38b6",
                 "shasum": ""
             },
             "require": {
                 "ext-json": "*",
                 "ext-simplexml": "*",
+                "fig/http-message-util": "^1.1.5",
                 "kelvinmo/simplejwt": "^0.5.2",
                 "psr/container": "^1.0",
                 "psr/http-server-middleware": "^1.0",
@@ -1305,10 +1306,10 @@
             ],
             "description": "Service Library",
             "support": {
-                "source": "https://github.com/mmsm2021/service-lib/tree/1.1.1",
+                "source": "https://github.com/mmsm2021/service-lib/tree/1.2.1",
                 "issues": "https://github.com/mmsm2021/service-lib/issues"
             },
-            "time": "2021-05-20T08:18:42+00:00"
+            "time": "2021-05-20T11:42:34+00:00"
         },
         {
             "name": "mongodb/mongodb",
