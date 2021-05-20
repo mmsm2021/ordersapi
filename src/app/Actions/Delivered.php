@@ -8,7 +8,6 @@ use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
-use Slim\Psr7\Factory\ResponseFactory;
 use DateTime;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Throwable;
