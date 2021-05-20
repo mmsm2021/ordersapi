@@ -4,20 +4,28 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
 class Delete
 {
-    /** Document manager used for persisting Document */
+    /**
+     * Document manager used for persisting and reading Documents
+     * @var DocumentManager
+     */
     private $documentManager;
-    /** Factory for HTTP response */
-    private $responseFactory;
+
+    /**
+     * Factory for JSON HTTP response
+     * @var JsonResponseFactory
+     */
+    private JsonResponseFactory $responseFactory;
 
     public function __construct(
         DocumentManager $documentManager,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
@@ -27,11 +35,14 @@ class Delete
     {
         try {
             $this->documentManager->createQueryBuilder(Order::class)->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
-            return $response;
+            return $this->responseFactory->create(200, [
+                'Delete' => 'success',
+            ]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 }
