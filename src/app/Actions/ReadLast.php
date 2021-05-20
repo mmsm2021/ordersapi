@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
 use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
@@ -17,33 +18,40 @@ class ReadLast
     private $documentManager;
 
     /**
-     * Factory for HTTP response
+     * Factory for JSON HTTP response
+     * @var JsonResponseFactory
      */
-    private $responseFactory;
+    private JsonResponseFactory $responseFactory;
 
     public function __construct(
         DocumentManager $documentManager,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
     }
 
+    /**
+     * ReadUser constructor.
+     * @param DocumentManager $documentManager
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __invoke(Response $response, $locationId, int $n)
     {
         try {
             $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
+            $n = $count < $n ? $count : $n;
             $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->skip($count - $n)->getQuery()->execute();
             $sendBack = [];
             foreach ($orders as $order) {
                 $sendBack[] = $order->toArray();
             }
-            $response->getBody()->write(json_encode(['orders' => $sendBack], JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT));
-            return $response;
+            return $this->responseFactory->create(200, ['orders' => $sendBack]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage()()
+            ]);
         }
     }
 }
