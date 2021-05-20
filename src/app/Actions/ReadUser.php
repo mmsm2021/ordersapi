@@ -12,7 +12,7 @@ use Throwable;
 class ReadUser
 {
     /**
-     * Document manager used for persisting Documents
+     * Document manager used for persisting and reading Documents
      * @var DocumentManager
      */
     private DocumentManager $documentManager;

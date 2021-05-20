@@ -10,9 +10,15 @@ use Throwable;
 
 class ReadLocation
 {
-    /** Document manager used for persisting Document */
+    /**
+     * Document manager used for persisting and reading Documents
+     * @var DocumentManager
+     */
     private $documentManager;
-    /** Factory for HTTP response */
+
+    /**
+     * Factory for HTTP response
+     */
     private $responseFactory;
 
     public function __construct(

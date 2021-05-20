@@ -14,11 +14,20 @@ use Throwable;
 
 class Delivered
 {
-    /** Document manager used for persisting Document */
+    /**
+     * Document manager used for persisting and reading Documents
+     * @var DocumentManager
+     */
     private $documentManager;
-    /** Validator for validation of PATCH Document */
+
+    /** 
+     * Validator for validation of PATCH Document
+     */
     private $patchValidator;
-    /** Factory for HTTP response */
+
+    /**
+     * Factory for HTTP response
+     */
     private $responseFactory;
 
     public function __construct(

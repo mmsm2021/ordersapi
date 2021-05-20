@@ -16,7 +16,7 @@ use Throwable;
 class Read
 {
     /**
-     * Document manager used for persisting Document
+     * Document manager used for persisting and reading Documents
      * @var DocumentManager
      */
     private $documentManager;
