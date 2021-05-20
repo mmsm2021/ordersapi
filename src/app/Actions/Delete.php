@@ -6,7 +6,6 @@ use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
 class Delete
