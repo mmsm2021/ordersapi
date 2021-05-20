@@ -2,14 +2,15 @@
 
 namespace App\Documents;
 
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Types\Type;
 use DateTime;
+use OpenApi\Annotations as OA;
 
 /**
  * Representation of an Order Document in MongoDB
  *
  * @author  NINLeviathan
- * @ODM\Document(collection="Orders")
  *  
  * @OA\Schema(
  *   schema="Order",
@@ -23,7 +24,6 @@ class Order
 {
     /**
      * Order ID
-     * @ODM\Id(type="string")
      * @var string
      * @OA\Property()
      */
@@ -31,7 +31,6 @@ class Order
 
     /**
      * Location Name
-     * @ODM\Field(type="string")
      * @var string
      * @OA\Property()
      */
@@ -39,7 +38,6 @@ class Order
 
     /**
      * Location ID
-     * @ODM\Field(type="int")
      * @var int
      * @OA\Property()
      */
@@ -47,7 +45,6 @@ class Order
 
     /**
      * Name or ID of waitress or waiter
-     * @ODM\Field(type="string")
      * @var string
      * @OA\Property()
      */
@@ -55,7 +52,6 @@ class Order
 
     /**
      * Name or ID of customer
-     * @ODM\Field(type="string")
      * @var string
      * @OA\Property()
      */
@@ -63,7 +59,6 @@ class Order
 
     /**
      * Array of items purchased
-     * @ODM\Field(type="EmbedMany")
      * @var array
      * @OA\Property(
      *  @OA\Items(
@@ -75,7 +70,6 @@ class Order
 
     /**
      * Discount percenntage given on order
-     * @ODM\Field(type="string")
      * @var string
      * @OA\Property()
      */
@@ -83,7 +77,6 @@ class Order
 
     /**
      * Amount total payed for order
-     * @ODM\Field(type="string")
      * @var string
      * @OA\Property()
      */
@@ -91,7 +84,6 @@ class Order
 
     /**
      * Date the order was placed
-     * @ODM\Field(type="date")
      * @var object
      * @OA\Property()
      */
@@ -282,5 +274,63 @@ class Order
             }
         }
         $this->items = $remainingItems;
+    }
+
+    public static function loadMetaData(ClassMetadata $metadata)
+    {
+        $metadata->setDatabase('FranDine');
+        $metadata->setCollection('Orders');
+        $metadata->mapField([
+            'name' => 'orderId',
+            'id' => true,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'location',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'locationId',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'server',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'customer',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapManyEmbedded([
+            'name' => 'items',
+            'targetDocument' => OrderItem::class
+        ]);
+        $metadata->mapField([
+            'name' => 'discount',
+            'id' => false,
+            'type' => Type::FLOAT,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'total',
+            'id' => false,
+            'type' => Type::FLOAT,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'orderDate',
+            'id' => false,
+            'type' => Type::DATE,
+            'nullable' => false
+        ]);
     }
 }

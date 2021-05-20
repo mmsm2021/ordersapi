@@ -3,12 +3,11 @@
 namespace App\Documents;
 
 use DateTime;
-use Doctrine\ODM\MongoDB\Mapping\Annotations as ODM;
-use Ramsey\Uuid\Generator\RandomBytesGenerator;
+use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
+use Doctrine\ODM\MongoDB\Types\Type;
 use Ramsey\Uuid\Uuid;
 
 /** 
- * @ODM\EmbeddedDocument
  * @OA\Schema(
  *   schema="OrderItem",
  *   type="object",
@@ -19,7 +18,6 @@ class OrderItem
 {
     /**
      * Item unique ID on order
-     * @ODM\Id(type="string")
      * @var string
      * @OA\Property()
      */
@@ -27,7 +25,6 @@ class OrderItem
 
     /**
      * Order item number on menu
-     * @ODM\Id(type="int")
      * @var int
      * @OA\Property()
      */
@@ -35,7 +32,6 @@ class OrderItem
 
     /**
      * Order item name
-     * @ODM\Id(type="string")
      * @var string
      * @OA\Property()
      */
@@ -43,7 +39,6 @@ class OrderItem
 
     /**
      * Order item prize
-     * @ODM\Id(type="string")
      * @var string
      * @OA\Property()
      */
@@ -51,7 +46,6 @@ class OrderItem
 
     /**
      * Order item delivery status
-     * @ODM\Field(type="date")
      * @var object
      * @OA\Property()
      */
@@ -114,5 +108,40 @@ class OrderItem
     public function setDeliveredTrue($deliveryTime): void
     {
         $this->delivered = $deliveryTime;
+    }
+
+    public static function loadMetaData(ClassMetadata $metadata)
+    {
+        $metadata->isEmbeddedDocument = true;
+        $metadata->mapField([
+            'name' => 'itemUUID',
+            'id' => true,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'nr',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'name',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'cost',
+            'id' => false,
+            'type' => Type::FLOAT,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
+            'name' => 'delivered',
+            'id' => false,
+            'type' => Type::DATE,
+            'nullable' => true
+        ]);
     }
 }

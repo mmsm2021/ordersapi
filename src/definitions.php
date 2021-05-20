@@ -3,7 +3,7 @@
 use App\Exceptions\DefinitionException;
 use Doctrine\ODM\MongoDB\Configuration;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\Mapping\Driver\AnnotationDriver;
+use Doctrine\Persistence\Mapping\Driver\StaticPHPDriver;
 use MMSM\Lib\AuthorizationMiddleware;
 use MMSM\Lib\Parsers\JsonBodyParser;
 use MMSM\Lib\Parsers\XmlBodyParser;
@@ -35,13 +35,13 @@ return [
         $config->setHydratorNamespace('App\\Hydrators');
         $config->setDefaultDB('FranDine');
         $config->setDocumentNamespaces(['App\\Documents']);
-        $config->setMetadataDriverImpl(AnnotationDriver::create(__DIR__ . '/app/Documents'));
+        $config->setMetadataDriverImpl(new StaticPHPDriver(__DIR__ . '/app/Documents'));
         return $config;
     },
     DocumentManager::class => function (Client $client, Configuration $config) {
         return DocumentManager::create($client, $config);
     },
-    AuthorizationMiddleware::class => function(
+    AuthorizationMiddleware::class => function (
         JWKValidator $JWKValidator,
         JWTValidator $JWTValidator,
         ContainerInterface $container
@@ -60,7 +60,7 @@ return [
         }
         return $authMiddleware;
     },
-    BodyParsingMiddleware::class => function(JsonBodyParser $jsonBodyParser, XmlBodyParser $xmlBodyParser) {
+    BodyParsingMiddleware::class => function (JsonBodyParser $jsonBodyParser, XmlBodyParser $xmlBodyParser) {
         return new BodyParsingMiddleware([
             'application/json' => $jsonBodyParser,
             'application/xml' => $xmlBodyParser,
