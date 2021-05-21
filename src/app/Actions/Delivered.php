@@ -6,7 +6,6 @@ use App\Documents\Order;
 use App\DTO\Validators\PatchValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
 use DateTime;
 use MMSM\Lib\Factories\JsonResponseFactory;
@@ -31,6 +30,11 @@ class Delivered
      */
     private JsonResponseFactory $responseFactory;
 
+    /**
+     * ReadUser constructor.
+     * @param DocumentManager $documentManager
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
         PatchValidator $patchValidator,
@@ -41,7 +45,12 @@ class Delivered
         $this->patchValidator = $patchValidator;
     }
 
-    public function __invoke(Request $request, Response $response, $orderId)
+    /**
+     * @param $orderId
+     * @param Request $request
+     * @return ResponseInterface
+     */
+    public function __invoke(Request $request, $orderId)
     {
         try {
             #$this->deliveryValidator->validate($request->getParsedBody());
@@ -65,6 +74,7 @@ class Delivered
         }
     }
 
+    /** Updates delivery status for the items specified in patch JSON */
     function updater($data, Order $order)
     {
         $deliveredItems = [];
