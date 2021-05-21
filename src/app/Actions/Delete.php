@@ -22,7 +22,7 @@ class Delete
     private JsonResponseFactory $responseFactory;
 
     /**
-     * ReadUser constructor.
+     * Delete constructor.
      * @param DocumentManager $documentManager
      * @param JsonResponseFactory $responseFactory
      */
