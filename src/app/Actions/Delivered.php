@@ -31,7 +31,7 @@ class Delivered
     private JsonResponseFactory $responseFactory;
 
     /**
-     * ReadUser constructor.
+     * Delivered constructor.
      * @param DocumentManager $documentManager
      * @param JsonResponseFactory $responseFactory
      */
