@@ -150,6 +150,8 @@ class Create
 
     /**
      * Creates the order based on the received JSON and info form JWT
+     * @param $token
+     * @param $data
      */
     function createOrder($token, $data)
     {
