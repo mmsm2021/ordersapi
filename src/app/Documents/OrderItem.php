@@ -111,9 +111,9 @@ class OrderItem
     }
 
     /** Returns items as array */
-    public function toArray()
+    public function toArray(): array
     {
-        $itemArray[] = [
+        $itemArray = [
             'itemUUID' => $this->getUUID(),
             'nr'  => $this->getNr(),
             'name'  => $this->getName(),

@@ -102,9 +102,8 @@ class Order
         $this->items = [];
     }
 
-    public function toArray()
+    public function toArray(): array
     {
-        $orderArray = [];
         $itemsArray = [];
 
         foreach ($this->items as $item) {
@@ -117,7 +116,7 @@ class Order
             ];
         }
 
-        $orderArray[] = [
+        $orderArray = [
             'orderId' => $this->getOrderID(),
             'location'  => $this->getLocation(),
             'locationId'  => $this->getLocationId(),
