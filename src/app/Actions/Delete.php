@@ -5,7 +5,6 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
-use Psr\Http\Message\ResponseInterface as Response;
 use Throwable;
 
 class Delete
@@ -22,6 +21,11 @@ class Delete
      */
     private JsonResponseFactory $responseFactory;
 
+    /**
+     * ReadUser constructor.
+     * @param DocumentManager $documentManager
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
@@ -30,7 +34,11 @@ class Delete
         $this->responseFactory = $responseFactory;
     }
 
-    public function __invoke(Response $response, $orderId)
+    /**
+     * @param $orderId
+     * @return ResponseInterface
+     */
+    public function __invoke($orderId)
     {
         try {
             $this->documentManager->createQueryBuilder(Order::class)->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
