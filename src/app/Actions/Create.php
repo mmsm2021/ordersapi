@@ -11,8 +11,6 @@ use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
 use Throwable;
 
-use function DI\create;
-
 class Create
 {
     /**
@@ -32,6 +30,12 @@ class Create
      */
     private JsonResponseFactory $responseFactory;
 
+    /**
+     * Create constructor.
+     * @param DocumentManager $documentManager
+     * @param OrderValidator $orderValidator
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
         OrderValidator $orderValidator,
@@ -118,7 +122,12 @@ class Create
      *     )   
      * )
      */
-    public function __invoke(Request $request, Response $response)
+
+    /**
+     * @param Request $userIdrequest
+     * @return ResponseInterface
+     */
+    public function __invoke(Request $request)
     {
         try {
             $this->orderValidator->validate($request->getParsedBody());
@@ -140,6 +149,9 @@ class Create
         }
     }
 
+    /**
+     * Creates the order based on the received JSON and info form JWT
+     */
     function createOrder($token, $data)
     {
         $order = new Order();
