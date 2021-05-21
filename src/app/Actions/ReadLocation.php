@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use Slim\Psr7\Request;
 use Throwable;
 
 class ReadLocation
@@ -35,16 +36,17 @@ class ReadLocation
     }
 
     /**
+     * @param Request $request
      * @param int $locationId
-     * @param string $sortBy
-     * @param int $page
-     * @param int $size
      * @return ResponseInterface
      */
-    public function __invoke($locationId, $sortBy, $page, $size)
+    #public function __invoke($locationId, $sortBy, $page, $size)
+    public function __invoke(Request $request, $locationId)
     {
         try {
-            $page = $page - 1;
+            $sortBy = $request->getQueryParams()['sortBy'];
+            $page = $request->getQueryParams()['page'] - 1;
+            $size = $request->getQueryParams()['size'];
             $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->sort($sortBy, 'desc')->limit($size)->skip($page * $size)->getQuery()->execute();
             $sendBack = [];
             foreach ($orders as $order) {

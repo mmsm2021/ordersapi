@@ -29,7 +29,7 @@ $app->group('/api/v1', function (RouteCollectorProxy $group) use ($bodyMiddlewar
     $group->post('/orders', Create::class)->add($bodyMiddleware);
     $group->get('/orders/{orderId}', Read::class);
     $group->get('/orders/{locationId}/last/{n}', ReadLast::class);
-    $group->get('/orders/location/{locationId}/{sortBy}/{page}/{size}', ReadLocation::class);
+    $group->get('/orders/location/{locationId}/', ReadLocation::class);
     $group->get('/orders/user/{userId}/all', ReadUser::class);
     $group->patch('/orders/{orderId}', Update::class)->add($bodyMiddleware);
     $group->patch('/orders/delivered/{orderId}', Delivered::class)->add($bodyMiddleware);
