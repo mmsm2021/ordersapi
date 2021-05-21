@@ -6,10 +6,9 @@ use App\Documents\Order;
 use App\Documents\OrderItem;
 use App\DTO\Validators\PatchValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
-use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
 class Update
@@ -30,17 +29,28 @@ class Update
      */
     private $responseFactory;
 
+    /**
+     * Update constructor.
+     * @param DocumentManager $documentManager
+     * @param PatchValidator $patchValidator
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
         PatchValidator $patchValidator,
-        ResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory
     ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
         $this->patchValidator = $patchValidator;
     }
 
-    public function __invoke(Request $request, Response $response, $orderId)
+    /**
+     * @param Request $request
+     * @param $orderId
+     * @return ResponseInterface
+     */
+    public function __invoke(Request $request, $orderId)
     {
         try {
             #$this->patchValidator->validate($request->getParsedBody());
@@ -48,18 +58,27 @@ class Update
             $order = $this->updater($request->getParsedBody(), $order);
             $this->documentManager->persist($order);
             $this->documentManager->flush();
-            return $response;
+            return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
         } catch (ValidationException $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         } catch (Throwable $e) {
-            $response = $this->responseFactory->createResponse(400);
-            $response->getBody()->write($e->getMessage());
-            return $response;
+            return $this->responseFactory->create(400, [
+                'error' => true,
+                'message' => $e->getMessage(),
+            ]);
         }
     }
 
+    /** 
+     * Updates the order items based on patch JSON,
+     * also corrects the prize and discount
+     * @param $data
+     * @param Order $order
+     * @return Order $order
+     */
     function updater($data, Order $order)
     {
         foreach ($data as $item) { //nyt item
