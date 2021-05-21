@@ -7,7 +7,6 @@ use App\DTO\Validators\OrderValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Psr\Http\Message\ResponseInterface as Response;
 use Respect\Validation\Exceptions\ValidationException;
 use Throwable;
 
