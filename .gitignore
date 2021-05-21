@@ -6,3 +6,4 @@ src/app/Proxies/*
 !src/app/Proxies/.gitkeep
 .idea/
 data/
+swagger.json
