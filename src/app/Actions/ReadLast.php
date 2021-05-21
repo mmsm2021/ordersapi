@@ -5,8 +5,6 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
-use Psr\Http\Message\ResponseInterface as Response;
-use Slim\Psr7\Factory\ResponseFactory;
 use Throwable;
 
 class ReadLast
@@ -23,6 +21,11 @@ class ReadLast
      */
     private JsonResponseFactory $responseFactory;
 
+    /**
+     * ReadLocation constructor.
+     * @param DocumentManager $documentManager
+     * @param JsonResponseFactory $responseFactory
+     */
     public function __construct(
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
@@ -32,11 +35,11 @@ class ReadLast
     }
 
     /**
-     * ReadUser constructor.
-     * @param DocumentManager $documentManager
-     * @param JsonResponseFactory $responseFactory
+     * @param $locationId
+     * @param int $n
+     * @return ResponseInterface
      */
-    public function __invoke(Response $response, $locationId, int $n)
+    public function __invoke($locationId, int $n)
     {
         try {
             $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
