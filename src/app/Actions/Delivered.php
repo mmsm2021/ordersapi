@@ -74,7 +74,11 @@ class Delivered
         }
     }
 
-    /** Updates delivery status for the items specified in patch JSON */
+    /** 
+     * Updates delivery status for the items specified in patch JSON
+     * @param $data
+     * @param Order $order
+     */
     function updater($data, Order $order)
     {
         $deliveredItems = [];
