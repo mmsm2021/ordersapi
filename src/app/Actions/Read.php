@@ -5,11 +5,9 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
-use Psr\Http\Message\ResponseInterface as Response;
 use SimpleJWT\JWT;
 use Slim\Exception\HttpException;
 use Slim\Exception\HttpUnauthorizedException;
-use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Psr7\Request;
 use Throwable;
 
@@ -41,6 +39,9 @@ class Read
     }
 
     /**
+     * @param Request $request
+     * @param $orderId
+     * 
      * @OA\Get(
      *     path="/api/v1/orders",
      *     summary="Reads requested order from database",
@@ -57,7 +58,7 @@ class Read
      *     )   
      * )
      */
-    public function __invoke(Request $request, Response $response, $orderId)
+    public function __invoke(Request $request, $orderId)
     {
         try {
             $token = $request->getAttribute('token');
