@@ -33,6 +33,7 @@ class Delivered
     /**
      * Delivered constructor.
      * @param DocumentManager $documentManager
+     * @param PatchValidator $patchValidator
      * @param JsonResponseFactory $responseFactory
      */
     public function __construct(
@@ -76,8 +77,9 @@ class Delivered
 
     /** 
      * Updates delivery status for the items specified in patch JSON
-     * @param $data
+     * @param array $data
      * @param Order $order
+     * @return Order $order
      */
     function updater($data, Order $order)
     {

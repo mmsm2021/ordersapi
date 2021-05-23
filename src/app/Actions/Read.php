@@ -40,7 +40,8 @@ class Read
 
     /**
      * @param Request $request
-     * @param $orderId
+     * @param string $orderId
+     * @return ResponseInterface
      * 
      * @OA\Get(
      *     path="/api/v1/orders",

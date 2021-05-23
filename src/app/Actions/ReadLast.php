@@ -35,7 +35,7 @@ class ReadLast
     }
 
     /**
-     * @param $locationId
+     * @param string $locationId
      * @param int $n
      * @return ResponseInterface
      */

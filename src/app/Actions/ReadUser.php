@@ -37,7 +37,7 @@ class ReadUser
     }
 
     /**
-     * @param $userId
+     * @param string $userId
      * @return ResponseInterface
      */
     public function __invoke($userId): ResponseInterface

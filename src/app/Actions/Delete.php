@@ -35,7 +35,7 @@ class Delete
     }
 
     /**
-     * @param $orderId
+     * @param string $orderId
      * @return ResponseInterface
      */
     public function __invoke($orderId)

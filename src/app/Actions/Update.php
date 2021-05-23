@@ -47,7 +47,7 @@ class Update
 
     /**
      * @param Request $request
-     * @param $orderId
+     * @param string $orderId
      * @return ResponseInterface
      */
     public function __invoke(Request $request, $orderId)
@@ -75,7 +75,7 @@ class Update
     /** 
      * Updates the order items based on patch JSON,
      * also corrects the prize and discount
-     * @param $data
+     * @param array $data
      * @param Order $order
      * @return Order $order
      */
