@@ -158,7 +158,7 @@ class Order
     }
 
     /** Waitress/Waiter ID/name getter and setter */
-    public function getServer(): string
+    public function getServer(): ?string
     {
         return $this->server;
     }
@@ -168,7 +168,7 @@ class Order
     }
 
     /** Customer name/ID getter and setter */
-    public function getCustomer(): string
+    public function getCustomer(): ?string
     {
         return $this->customer;
     }

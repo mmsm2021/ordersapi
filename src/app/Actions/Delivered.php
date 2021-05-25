@@ -56,7 +56,7 @@ class Delivered
         try {
             #$this->deliveryValidator->validate($request->getParsedBody());
             $order = $this->documentManager->find(Order::class, $orderId);
-            $order = $this->updater($request->getParsedBody()['items'], $order);
+            $order = $this->updater($request, $order);
             $this->documentManager->persist($order);
             $this->documentManager->flush();
             return $this->responseFactory->create(200, [
@@ -81,8 +81,9 @@ class Delivered
      * @param Order $order
      * @return Order $order
      */
-    function updater($data, Order $order)
+    function updater(Request $request, Order $order)
     {
+        $data = $request->getParsedBody()['items'];
         $deliveredItems = [];
         foreach ($data as $item) {
             foreach ($order->getItems() as $orderItem) {
@@ -92,6 +93,7 @@ class Delivered
             }
             $deliveredItems[] = $order->getItems();
         }
+        $order->setServer($request->getAttribute('token')->getClaims()['sub']);
         return $order;
     }
 }

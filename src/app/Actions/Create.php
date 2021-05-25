@@ -157,32 +157,13 @@ class Create
     function createOrder($token, $data)
     {
         $order = new Order();
-        $order->setCustomer($token->getClaims()['sub']);
-        $order->setOrderStatus(1);
-        $order->setOrderStatus(1);
-        foreach ($data as $key => $value) {
-            switch ($key) {
-                case 'location':
-                    $order->setLocation($value);
-                    break;
-                case 'locationId':
-                    $order->setLocationId($value);
-                    break;
-                case 'server':
-                    $order->setServer($value);
-                    break;
-                case 'items':
-                    $order->addItems($value);
-                    break;
-                case 'discount':
-                    $order->setDiscount($value);
-                    break;
-                case 'total':
-                    $order->setTotal($value);
-                    break;
-            }
-            $order->setOrderDate();
-        }
+        $order->setLocation($data['location']);
+        $order->setLocationId($data['locationId']);
+        in_array('Customer', $token->getClaims()['https://frandine.randomphp.com/roles'], true) ?
+            $order->setCustomer($token->getClaims()['sub']) : $order->setServer($token->getClaims()['sub']);
+        $order->addItems($data['items']);
+        $order->setDiscount($data['discount']);
+        $order->setTotal($data['total']);
         return $order;
     }
 }
