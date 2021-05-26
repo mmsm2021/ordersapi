@@ -27,35 +27,35 @@ class Order
      * @var string
      * @OA\Property()
      */
-    private $orderId;
+    private ?string $orderId;
 
     /**
      * Location Name
      * @var string
      * @OA\Property()
      */
-    private $location = 0;
+    private ?string $location = '0';
 
     /**
      * Location ID
      * @var int
      * @OA\Property()
      */
-    private $locationId;
+    private ?int $locationId;
 
     /**
      * Name or ID of waitress or waiter
      * @var string
      * @OA\Property()
      */
-    private $server;
+    private ?string $server;
 
     /**
      * Name or ID of customer
      * @var string
      * @OA\Property()
      */
-    private $customer;
+    private ?string $customer;
 
     /**
      * Array of items purchased
@@ -66,35 +66,35 @@ class Order
      *  )
      * )
      */
-    private $items = [];
+    private ?array $items = [];
 
     /**
      * Order status
-     * @var DateTime
+     * @var int
      * OA\Property
      */
-    private $orderStatus;
+    private ?int $orderStatus;
 
     /**
      * Discount percenntage given on order
      * @var string
      * @OA\Property()
      */
-    private $discount;
+    private ?string $discount;
 
     /**
      * Amount total payed for order
      * @var string
      * @OA\Property()
      */
-    private $total;
+    private ?string $total;
 
     /**
      * Date the order was placed
      * @var object
      * @OA\Property()
      */
-    private DateTime $orderDate;
+    private ?DateTime $orderDate = null;
 
     /** Constructor */
     public function __construct()
@@ -127,19 +127,24 @@ class Order
             'orderStatus' => $this->getOrderStatus(),
             'discount'  => $this->getDiscount(),
             'total'  => $this->getTotal(),
-            'orderDate'  => $this->getOrderDate()
+            // 'orderDate'  => $this->getOrderDate()
         ];
+        if ($this->getOrderDate() instanceof DateTime) {
+            $orderArray['orderDate'] = $this->getOrderDate()->format(\DateTimeInterface::ISO8601);
+        } else {
+            $orderArray['orderDate'] = null;
+        }
         return $orderArray;
     }
 
     /** Order ID getter */
-    public function getOrderId(): string
+    public function getOrderId(): ?string
     {
         return $this->orderId;
     }
 
     /** Location getter and setter */
-    public function getLocation(): string
+    public function getLocation(): ?string
     {
         return $this->location;
     }
@@ -149,7 +154,7 @@ class Order
     }
 
     /** Location ID getter and setter */
-    public function getLocationId(): int
+    public function getLocationId(): ?int
     {
         return $this->locationId;
     }
@@ -199,7 +204,7 @@ class Order
     }
 
     /** Returns order item objects in an array */
-    public function getItems(): array
+    public function getItems(): ?array
     {
         $sendBack = [];
         foreach ($this->items as $item) {
@@ -209,7 +214,7 @@ class Order
     }
 
     /** Returns order items as arrays in array */
-    public function getItemsArray(): array
+    public function getItemsArray(): ?array
     {
         $sendBack = [];
         foreach ($this->items as $item) {
@@ -258,7 +263,7 @@ class Order
     }
 
     /** Order status getter and setter */
-    public function getOrderStatus(): ?DateTime
+    public function getOrderStatus(): ?int
     {
         return $this->orderStatus;
     }
@@ -278,7 +283,7 @@ class Order
     }
 
     /** Order total getter and setter */
-    public function getTotal(): int
+    public function getTotal(): ?int
     {
         return $this->total;
     }
