@@ -70,7 +70,7 @@ class Order
 
     /**
      * Order status
-     * @var int
+     * @var DateTime
      * OA\Property
      */
     private $orderStatus;
@@ -100,6 +100,7 @@ class Order
     public function __construct()
     {
         $this->items = [];
+        $this->orderDate = new DateTime();
     }
 
     public function toArray(): array
@@ -257,7 +258,7 @@ class Order
     }
 
     /** Order status getter and setter */
-    public function getOrderStatus(): int
+    public function getOrderStatus(): ?DateTime
     {
         return $this->orderStatus;
     }
@@ -286,14 +287,10 @@ class Order
         $this->total = $total;
     }
 
-    /** Order Date getter and setter */
+    /** Order Date getter */
     public function getOrderDate(): ?DateTime
     {
         return $this->orderDate;
-    }
-    public function setOrderDate(): void
-    {
-        $this->orderDate = new DateTime();
     }
 
     /** Removes order item from array of order items */
