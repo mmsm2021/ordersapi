@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class ReadLast
@@ -39,7 +40,7 @@ class ReadLast
      * @param int $n
      * @return ResponseInterface
      */
-    public function __invoke($locationId, int $n)
+    public function __invoke($locationId, int $n): ResponseInterface
     {
         try {
             $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();

@@ -20,7 +20,7 @@ services:
         links:
             - mongo
         environment:
-            MONGO_URI: mongodb://FranDineReadWrite:ReadWritePassword@mongo
+            MONGO_URI: mongodb://mmsm-frandine-root:frandine-master@mongo
             JWK_URI: https://mmsm.eu.auth0.com/.well-known/jwks.json
     mongo:
         image: mongo

@@ -6,6 +6,7 @@
 
 use MMSM\Lib\AuthorizationMiddleware;
 use Slim\Middleware\BodyParsingMiddleware;
+use Slim\Middleware\ErrorMiddleware;
 use Slim\Routing\RouteCollectorProxy;
 use App\Actions\Create;
 use App\Actions\Read;
@@ -20,18 +21,17 @@ use App\Actions\Delete;
 /** @var \Psr\Container\ContainerInterface $container */
 
 $app->addRoutingMiddleware();
-$app->addErrorMiddleware(true, true, true);
+$app->add($container->get(BodyParsingMiddleware::class));
+$app->add($container->get(AuthorizationMiddleware::class));
+$app->add($container->get(ErrorMiddleware::class));
 
-$authMiddleware = $container->get(AuthorizationMiddleware::class);
-$bodyMiddleware = $container->get(BodyParsingMiddleware::class);
-
-$app->group('/api/v1', function (RouteCollectorProxy $group) use ($bodyMiddleware) {
-    $group->post('/orders', Create::class)->add($bodyMiddleware);
+$app->group('/api/v1', function (RouteCollectorProxy $group) {
+    $group->post('/orders', Create::class);
     $group->get('/orders/{orderId}', Read::class);
     $group->get('/orders/{locationId}/last/{n}', ReadLast::class);
     $group->get('/orders/location/{locationId}', ReadLocation::class);
     $group->get('/orders/user/{userId}/all', ReadUser::class);
-    $group->patch('/orders/{orderId}', Update::class)->add($bodyMiddleware);
-    $group->patch('/orders/delivered/{orderId}', Delivered::class)->add($bodyMiddleware);
+    $group->patch('/orders/{orderId}', Update::class);
+    $group->patch('/orders/delivered/{orderId}', Delivered::class);
     $group->delete('/orders/{orderId}', Delete::class);
-})->add($authMiddleware);
+});

@@ -4,10 +4,18 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use App\DTO\Validators\OrderValidator;
+use App\Factories\OrderItemFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use Doctrine\ODM\MongoDB\MongoDBException;
+use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use Psr\Container\ContainerInterface;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\ValidationException;
+use SimpleJWT\JWT;
+use Slim\Exception\HttpBadRequestException;
+use Slim\Exception\HttpInternalServerErrorException;
 use Throwable;
 
 class Create
@@ -30,19 +38,43 @@ class Create
     private JsonResponseFactory $responseFactory;
 
     /**
+     * @var Authorizer
+     */
+    private Authorizer $authorizer;
+
+    /**
+     * @var ContainerInterface
+     */
+    private ContainerInterface $container;
+
+    /**
+     * @var OrderItemFactory
+     */
+    private OrderItemFactory $orderItemFactory;
+
+    /**
      * Create constructor.
      * @param DocumentManager $documentManager
      * @param OrderValidator $orderValidator
      * @param JsonResponseFactory $responseFactory
+     * @param Authorizer $authorizer
+     * @param ContainerInterface $container
+     * @param OrderItemFactory $orderItemFactory
      */
     public function __construct(
         DocumentManager $documentManager,
         OrderValidator $orderValidator,
-        JsonResponseFactory $responseFactory
+        JsonResponseFactory $responseFactory,
+        Authorizer $authorizer,
+        ContainerInterface $container,
+        OrderItemFactory $orderItemFactory
     ) {
         $this->documentManager = $documentManager;
         $this->orderValidator = $orderValidator;
         $this->responseFactory = $responseFactory;
+        $this->authorizer = $authorizer;
+        $this->container = $container;
+        $this->orderItemFactory = $orderItemFactory;
     }
 
     /**
@@ -123,28 +155,40 @@ class Create
      */
 
     /**
-     * @param Request $userIdrequest
+     * @param Request $request
      * @return ResponseInterface
+     * @throws HttpInternalServerErrorException
      */
     public function __invoke(Request $request)
     {
         try {
-            $this->orderValidator->validate($request->getParsedBody());
-            $token = $request->getAttribute('token');
-            $order = $this->createOrder($token, $request->getParsedBody());
+            $body = $request->getParsedBody();
+            if (empty($body)) {
+                throw new HttpBadRequestException(
+                    $request,
+                    'Invalid body.'
+                );
+            }
+            $this->orderValidator->validate($body);
+            $this->authorizer->authorizeToRoles(
+                $request,
+                [
+                    'user.roles.customer',
+                    'user.roles.employee',
+                    'user.roles.admin',
+                    'user.roles.super',
+                ]
+            );
+            $order = $this->createOrder($request->getAttribute('token'), $body);
             $this->documentManager->persist($order);
             $this->documentManager->flush();
             return $this->responseFactory->create(200, ['orderId' => $order->getOrderId()]);
-        } catch (ValidationException $e) {
-            return $this->responseFactory->create(400, [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Throwable $e) {
-            return $this->responseFactory->create(500, [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ]);
+        } catch (MongoDBException $mongoDBException) {
+            throw new HttpInternalServerErrorException(
+                $request,
+                'Database error occurred',
+                $mongoDBException
+            );
         }
     }
 
@@ -154,16 +198,40 @@ class Create
      * @param array $data
      * @return Order $order
      */
-    function createOrder($token, $data)
+    public function createOrder(JWT $token, array $data)
     {
+
         $order = new Order();
         $order->setLocation($data['location']);
         $order->setLocationId($data['locationId']);
-        in_array('Customer', $token->getClaims()['https://frandine.randomphp.com/roles'], true) ?
-            $order->setCustomer($token->getClaims()['sub']) : $order->setServer($token->getClaims()['sub']);
-        $order->addItems($data['items']);
+        if ($this->isCustomer($token)) {
+            $order->setCustomer($token->getClaim('sub'));
+        } else {
+            $order->setServer($token->getClaim('sub'));
+        }
+
+        foreach ($data['items'] as $item) {
+            $oi = $this->orderItemFactory->createFromArray($item);
+            $order->addItem($oi);
+        }
         $order->setDiscount($data['discount']);
         $order->setTotal($data['total']);
         return $order;
+    }
+
+    /**
+     * @param JWT $token
+     * @return bool
+     */
+    protected function isCustomer(JWT $token): bool
+    {
+        $customerRoles = $this->container->get('user.roles.customer');
+        $namespace = $this->container->get('custom.tokenClaim.namespace');
+        foreach ($token->getClaim($namespace . '/rules') as $role) {
+            if (in_array(strtolower($role), $customerRoles)) {
+                return true;
+            }
+        }
+        return false;
     }
 }

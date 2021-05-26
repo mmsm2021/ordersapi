@@ -18,96 +18,114 @@ class OrderItem
 {
     /**
      * Item unique ID on order
-     * @var string
+     * @var string|null
      * @OA\Property()
      */
-    private $itemUUID;
+    private ?string $itemUUID = null;
 
     /**
      * Order item number on menu
      * @var int
      * @OA\Property()
      */
-    private $nr;
+    private int $nr;
 
     /**
      * Order item name
      * @var string
      * @OA\Property()
      */
-    private $name;
+    private string $name;
 
     /**
      * Order item prize
      * @var string
      * @OA\Property()
      */
-    private $cost;
+    private string $cost;
 
     /**
      * Order item delivery status
-     * @var object
+     * @var DateTime|null
      * @OA\Property()
      */
     private ?DateTime $delivered = null;
 
-    /** Order item Unique identifier getter and setter */
+    /**
+     * Order item Unique identifier getter
+     * @return string|null
+     */
     public function getUUID(): ?string
     {
         return $this->itemUUID;
     }
 
-    public function setUUID($itemUUID): void
-    {
-        if (null == $itemUUID) {
-            $this->itemUUID = Uuid::uuid4();
-        } else {
-            $this->itemUUID = $itemUUID;
-        }
-    }
-
-    /** Order item getter and setter */
+    /**
+     * Order item getter
+     * @return int
+     */
     public function getNr(): int
     {
         return $this->nr;
     }
+
+    /**
+     * @param int $nr
+     */
     public function setNr(int $nr): void
     {
         $this->nr = $nr;
     }
 
-    /** Order item getter and setter */
+    /**
+     * Order item getter and setter
+     * @return string|null
+     */
     public function getName(): ?string
     {
         return $this->name;
     }
+
+    /**
+     * @param string $name
+     */
     public function setName(string $name): void
     {
         $this->name = $name;
     }
 
-    /** Order item prize getter and setter */
-    public function getCost(): int
+    /**
+     * Order item prize getter and setter
+     * @return string
+     */
+    public function getCost(): string
     {
         return $this->cost;
     }
-    public function setCost(int $cost): void
+
+    /**
+     * @param string $cost
+     */
+    public function setCost(string $cost): void
     {
         $this->cost = $cost;
     }
 
-    /** Order item delivery status getter and setter */
-    public function getDeliveredStatus(): ?DateTime
+    /**
+     * Order item delivery status getter and setter
+     * @return DateTime|null
+     */
+    public function getDelivered(): ?DateTime
     {
         return $this->delivered;
     }
-    public function setDeliveredStatus(DateTime $dateTime): void
+
+    /**
+     * @param DateTime $dateTime
+     */
+    public function setDelivered(DateTime $dateTime): void
     {
         $this->delivered = $dateTime;
-    }
-    public function setDeliveredTrue($deliveryTime): void
-    {
-        $this->delivered = $deliveryTime;
     }
 
     /** Returns items as array */
@@ -118,8 +136,12 @@ class OrderItem
             'nr'  => $this->getNr(),
             'name'  => $this->getName(),
             'cost'  => $this->getCost(),
-            'delivered'  => $this->getDeliveredStatus(),
         ];
+        if ($this->getDelivered() instanceof DateTime) {
+            $itemArray['delivered'] = $this->getDelivered()->format(\DateTimeInterface::ISO8601);
+        } else {
+            $itemArray['delivered'] = null;
+        }
         return $itemArray;
     }
 
