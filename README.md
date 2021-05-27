@@ -6,7 +6,7 @@ Repository for orders API and orders database
 - [x] GET     :: /api/orders/{orderId}              => Returns JSON representation of order
 - [x] GET     :: /api/orders/{locationId}/          => Takes QueryParams (sortBy, page, size) Returns all location orders sorted, on pages, with given size
 - [x] GET     :: /api/orders/{locationId}/last/{n}  => Returns the last 'n' orders created for location 'locationId'
-- [x] GET     :: /api/orders/{userId}/all           => Returns all orders for user
+- [x] GET     :: /api/orders/{userId}               => Returns all orders for user
 - [x] POST    :: /api/orders                        => Creates order carried as JSON, replies with OrderID upon success
 - [x] PATCH   :: /api/orders/{orderId}              => Updates order, with changes carried as JSON
 - [x] PATCH   :: /api/orders/delivered/{orderId}    => Updates orderitems marked as delivered, setting time of delivery

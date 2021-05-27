@@ -5,7 +5,6 @@ namespace App\Documents;
 use DateTime;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
-use Ramsey\Uuid\Uuid;
 
 /** 
  * @OA\Schema(

@@ -5,6 +5,8 @@ namespace App\Actions;
 use App\Documents\Order;
 use App\DTO\Validators\PatchValidator;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Authorizer;
+use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\ValidationException;
 use DateTime;
@@ -14,15 +16,21 @@ use Throwable;
 class Delivered
 {
     /**
+     * authorizer for verification of user permissions
+     * @var Authorizer
+     */
+    private Authorizer $authorizer;
+    /**
      * Document manager used for persisting and reading Documents
      * @var DocumentManager
      */
-    private $documentManager;
+    private DocumentManager $documentManager;
 
-    /** 
+    /**
      * Validator for validation of PATCH Document
+     * @var PatchValidator
      */
-    private $patchValidator;
+    private PatchValidator $patchValidator;
 
     /**
      * Factory for JSON HTTP response
@@ -37,10 +45,12 @@ class Delivered
      * @param JsonResponseFactory $responseFactory
      */
     public function __construct(
+        Authorizer $authorizer,
         DocumentManager $documentManager,
         PatchValidator $patchValidator,
         JsonResponseFactory $responseFactory
     ) {
+        $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
         $this->patchValidator = $patchValidator;
@@ -51,12 +61,23 @@ class Delivered
      * @param Request $request
      * @return ResponseInterface
      */
-    public function __invoke(Request $request, $orderId)
+    public function __invoke(Request $request, $orderId): ResponseInterface
     {
         try {
-            #$this->deliveryValidator->validate($request->getParsedBody());
+            $this->patchValidator->validate($request->getParsedBody());
+            $this->authorizer->authorizeToRoles(
+                $request,
+                [
+                    'user.roles.employee',
+                    'user.roles.admin',
+                    'user.roles.super',
+                ]
+            );
             $order = $this->documentManager->find(Order::class, $orderId);
-            $order = $this->updater($request, $order);
+            $items = $request->getParsedBody()['items'];
+            $server = $request->getAttribute('token')->getClaims()['sub'];
+            /** @var Order $order */
+            $order = $this->updater($items, $order, $server);
             $this->documentManager->persist($order);
             $this->documentManager->flush();
             return $this->responseFactory->create(200, [
@@ -75,25 +96,23 @@ class Delivered
         }
     }
 
-    /** 
+    /**
      * Updates delivery status for the items specified in patch JSON
-     * @param array $data
+     * @param array $items
      * @param Order $order
+     * @param string $server
      * @return Order $order
      */
-    function updater(Request $request, Order $order)
+    function updater(array $items, Order $order, string $server): Order
     {
-        $data = $request->getParsedBody()['items'];
-        $deliveredItems = [];
-        foreach ($data as $item) {
-            foreach ($order->getItems() as $orderItem) {
-                if ($orderItem->getUUID() == $item['itemUUID']) {
-                    $orderItem->setDeliveredTrue(new DateTime());
-                }
+        foreach ($items as $item) {
+            $item = array_change_key_case($item, CASE_LOWER);
+            $orderItem = $order->getItem($item['itemuuid']);
+            if($orderItem !== null) {
+                $orderItem->setDelivered(new DateTime());
             }
-            $deliveredItems[] = $order->getItems();
         }
-        $order->setServer($request->getAttribute('token')->getClaims()['sub']);
+        $order->setServer($server);
         return $order;
     }
 }

@@ -12,7 +12,6 @@ use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Respect\Validation\Exceptions\ValidationException;
 use SimpleJWT\JWT;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpInternalServerErrorException;
@@ -29,7 +28,7 @@ class Create
     /**
      * Validator for validation of order contents
      */
-    private $orderValidator;
+    private OrderValidator $orderValidator;
 
     /**
      * Factory for JSON HTTP response
@@ -38,16 +37,19 @@ class Create
     private JsonResponseFactory $responseFactory;
 
     /**
+     * Authorizer for verification of user permissions
      * @var Authorizer
      */
     private Authorizer $authorizer;
 
     /**
+     * Container for various definitions
      * @var ContainerInterface
      */
     private ContainerInterface $container;
 
     /**
+     * Factory for creation of orderitems
      * @var OrderItemFactory
      */
     private OrderItemFactory $orderItemFactory;
@@ -157,9 +159,11 @@ class Create
     /**
      * @param Request $request
      * @return ResponseInterface
+     * @throws HttpBadRequestException
      * @throws HttpInternalServerErrorException
+     * @throws Throwable
      */
-    public function __invoke(Request $request)
+    public function __invoke(Request $request): ResponseInterface
     {
         try {
             $body = $request->getParsedBody();
@@ -193,14 +197,13 @@ class Create
     }
 
     /**
-     * Creates the order based on the received JSON and info form JWT
+     * Creates the order based on the received JSON and info from JWT
      * @param JWT $token
      * @param array $data
      * @return Order $order
      */
-    public function createOrder(JWT $token, array $data)
+    public function createOrder(JWT $token, array $data): Order
     {
-
         $order = new Order();
         $order->setLocation($data['location']);
         $order->setLocationId($data['locationId']);
@@ -220,6 +223,7 @@ class Create
     }
 
     /**
+     * Verifies that JWT identifies a user
      * @param JWT $token
      * @return bool
      */
@@ -227,7 +231,7 @@ class Create
     {
         $customerRoles = $this->container->get('user.roles.customer');
         $namespace = $this->container->get('custom.tokenClaim.namespace');
-        foreach ($token->getClaim($namespace . '/rules') as $role) {
+        foreach ($token->getClaim($namespace . '/roles') as $role) {
             if (in_array(strtolower($role), $customerRoles)) {
                 return true;
             }

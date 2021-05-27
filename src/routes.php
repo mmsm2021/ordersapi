@@ -30,7 +30,7 @@ $app->group('/api/v1', function (RouteCollectorProxy $group) {
     $group->get('/orders/{orderId}', Read::class);
     $group->get('/orders/{locationId}/last/{n}', ReadLast::class);
     $group->get('/orders/location/{locationId}', ReadLocation::class);
-    $group->get('/orders/user/{userId}/all', ReadUser::class);
+    $group->get('/orders/user/{userId}', ReadUser::class);
     $group->patch('/orders/{orderId}', Update::class);
     $group->patch('/orders/delivered/{orderId}', Delivered::class);
     $group->delete('/orders/{orderId}', Delete::class);

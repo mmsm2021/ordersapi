@@ -1,9 +1,10 @@
-src/vendor
 .DS_Store
+.idea/
+data/
 src/app/Hydrators/*
 !src/app/Hydrators/.gitkeep
 src/app/Proxies/*
 !src/app/Proxies/.gitkeep
-.idea/
-data/
+src/var
+src/vendor
 swagger.json

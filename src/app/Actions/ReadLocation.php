@@ -4,17 +4,25 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
+use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use Psr\Http\Message\ResponseInterface;
 use Slim\Psr7\Request;
 use Throwable;
 
 class ReadLocation
 {
     /**
+     * Authorizer for verification of user permissions
+     * @var Authorizer
+     */
+    private Authorizer $authorizer;
+
+    /**
      * Document manager used for persisting and reading Documents
      * @var DocumentManager
      */
-    private $documentManager;
+    private DocumentManager $documentManager;
 
     /**
      * Factory for JSON HTTP response
@@ -24,13 +32,16 @@ class ReadLocation
 
     /**
      * ReadLocation constructor.
+     * @param Authorizer $authorizer
      * @param DocumentManager $documentManager
      * @param JsonResponseFactory $responseFactory
      */
     public function __construct(
+        Authorizer  $authorizer,
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
     ) {
+        $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
     }
@@ -39,10 +50,18 @@ class ReadLocation
      * @param Request $request
      * @param int $locationId
      * @return ResponseInterface
+     * @throws Throwable
      */
-    #public function __invoke($locationId, $sortBy, $page, $size)
-    public function __invoke(Request $request, $locationId)
+    public function __invoke(Request $request, int $locationId): ResponseInterface
     {
+        $this->authorizer->authorizeToRoles(
+            $request,
+            [
+                'user.roles.employee',
+                'user.roles.admin',
+                'user.roles.super',
+            ]
+        );
         try {
             $sortBy = $request->getQueryParams()['sortBy'];
             $page = $request->getQueryParams()['page'] - 1;

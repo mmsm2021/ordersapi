@@ -5,6 +5,7 @@ namespace App\Actions;
 use App\Documents\Order;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use Psr\Http\Message\ResponseInterface;
 use Throwable;
 
 class Delete
@@ -13,7 +14,7 @@ class Delete
      * Document manager used for persisting and reading Documents
      * @var DocumentManager
      */
-    private $documentManager;
+    private DocumentManager $documentManager;
 
     /**
      * Factory for JSON HTTP response
@@ -38,10 +39,11 @@ class Delete
      * @param string $orderId
      * @return ResponseInterface
      */
-    public function __invoke($orderId)
+    public function __invoke(string $orderId): ResponseInterface
     {
         try {
-            $this->documentManager->createQueryBuilder(Order::class)->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
+            $this->documentManager->createQueryBuilder(Order::class)
+                ->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
             return $this->responseFactory->create(200, [
                 'Delete' => 'success',
             ]);
