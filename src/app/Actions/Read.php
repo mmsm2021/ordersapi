@@ -110,7 +110,7 @@ class Read
     }
 
     /**
-     * Verifies that user is customer
+     * Verifies that requesting user is the same as user on order
      * @param JWT $token
      * @param Order $order
      * @return bool
