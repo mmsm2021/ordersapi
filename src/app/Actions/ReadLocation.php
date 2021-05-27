@@ -48,11 +48,11 @@ class ReadLocation
 
     /**
      * @param Request $request
-     * @param int $locationId
+     * @param string $locationId
      * @return ResponseInterface
      * @throws Throwable
      */
-    public function __invoke(Request $request, int $locationId): ResponseInterface
+    public function __invoke(Request $request, string $locationId): ResponseInterface
     {
         $this->authorizer->authorizeToRoles(
             $request,
