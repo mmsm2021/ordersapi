@@ -7,6 +7,7 @@
 use MMSM\Lib\AuthorizationMiddleware;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ErrorMiddleware;
+use Slim\Psr7\Factory\ResponseFactory;
 use Slim\Routing\RouteCollectorProxy;
 use App\Actions\Create;
 use App\Actions\Read;
@@ -24,6 +25,10 @@ $app->addRoutingMiddleware();
 $app->add($container->get(BodyParsingMiddleware::class));
 $app->add($container->get(AuthorizationMiddleware::class));
 $app->add($container->get(ErrorMiddleware::class));
+
+$app->options('{routes:.+}', function (ResponseFactory $responseFactory) {
+    return $responseFactory->createResponse(204);
+});
 
 $app->group('/api/v1', function (RouteCollectorProxy $group) {
     $group->post('/orders', Create::class);
