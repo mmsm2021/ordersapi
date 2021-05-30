@@ -65,6 +65,124 @@ class Update
     }
 
     /**
+     *  @OA\Patch(
+     *      path="/api/v1/orders/{orderId}",
+     *      summary="Updates the order items",
+     *      description="For the specified order, items specified in carried JSON are updated as specified, order total is updated accordingly",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="orderID",
+     *          in="path",
+     *          description="The id of the order to be updated",
+     *          required=true
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          description="The OrderItems to set as delivered",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="OrderItemsUpdateObject",
+     *                  type="object",
+     *                  description="Object containing the order items to be updated",
+     *                  @OA\Property(
+     *                      property="items",
+     *                      description="Array of OrderItems, to be changed, specifying changes for each item",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          @OA\Property(
+     *                              property="itemUUID",
+     *                              description="The unique identifier of the item",
+     *                              type="string"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="nr",
+     *                              description="The menu number for the item",
+     *                              type="number"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="name",
+     *                              description="The name of the item",
+     *                              type="string"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="cost",
+     *                              description="The prize of the item",
+     *                              type="string"
+     *                          )
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="UserOrdersObject",
+     *                  type="object",
+     *                  description="JSON representation of updated order",
+     *                  @OA\Property(
+     *                      property="orders",
+     *                      description="Array orders",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          ref="#/components/schemas/Order"
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $orderId
      * @return ResponseInterface
@@ -87,7 +205,7 @@ class Update
             /** @var Order $order */
             $order = $this->documentManager->find(Order::class, $orderId);
             $itemsOnOrder = $this->isItemOnOrder($order, $body);
-            if($itemsOnOrder) {
+            if ($itemsOnOrder) {
                 $order = $this->updateOrder($order, $body);
                 $this->documentManager->persist($order);
                 $this->documentManager->flush();
@@ -141,7 +259,7 @@ class Update
                 case 'discount':
                     $order->setDiscount($value);
                     break;
-                /*case 'total':
+                    /*case 'total':
                     $order->setTotal($value);
                     break;*/
             }
@@ -189,10 +307,9 @@ class Update
     private function isItemOnOrder(Order $order, array $items): bool
     {
         $itemsOnOrder = true;
-        foreach ($items['items'] as $item)
-        {
+        foreach ($items['items'] as $item) {
             $orderItem = $order->getItem($item['itemUUID']);
-            if($orderItem == null) {
+            if ($orderItem == null) {
                 $itemsOnOrder = false;
             }
         }

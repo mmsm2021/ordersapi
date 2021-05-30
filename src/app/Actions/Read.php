@@ -43,34 +43,98 @@ class Read
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory,
         Authorizer $authorizer
-    )
-    {
+    ) {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
         $this->authorizer = $authorizer;
     }
 
     /**
+     *  @OA\Get(
+     *      path="/api/v1/orders/{orderId}",
+     *      summary="Reads requested order from database",
+     *      description="Returns a JSON representation of the requested order",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="orderId",
+     *          in="path",
+     *          description="The order to get",
+     *          required=true
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\JsonContent(ref="#/components/schemas/Order"),
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=404,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $orderId
      * @return ResponseInterface
      * @throws Throwable
-     *
-     * @OA\Get(
-     *     path="/api/v1/orders",
-     *     summary="Reads requested order from database",
-     *     description="Returns a JSON representation of the requested order",
-     *     @OA\Response(
-     *           response=200,
-     *           description="successful operation",
-     *           @OA\JsonContent(ref="#/components/schemas/Order"),
-     *          )
-     *     ),
-     * @OA\Response(
-     *         response=400,
-     *         description="Bad Request"
-     *     )
-     * )
      */
     public function __invoke(Request $request, string $orderId): ResponseInterface
     {

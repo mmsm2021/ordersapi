@@ -57,6 +57,123 @@ class Delivered
     }
 
     /**
+     *  @OA\Patch(
+     *      path="/api/v1/orders/delivered/{orderId}",
+     *      summary="Sets specified item(s) as delivered, on specified order",
+     *      description="Takes JSON patch documen, and sets each contained order item as delivered, for the order specified in path",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="orderId",
+     *          in="path",
+     *          description="The order on which to set items delivered",
+     *          required=true
+     *      ),
+     *      @OA\RequestBody(
+     *          required=true,
+     *          description="The OrderItems to set as delivered",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="OrderItemDeliveredObject",
+     *                  type="object",
+     *                  description="Object containing the order items to set as delivered",
+     *                  @OA\Property(
+     *                      property="items",
+     *                      description="Array of OrderItems",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          @OA\Property(
+     *                              property="itemUUID",
+     *                              description="The unique identifier of the item",
+     *                              type="string"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="delivered",
+     *                              description="Boolean to indicate that item is to be set as delivered",
+     *                              type="boolean"
+     *                          )
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="Replies with JSON object, containing the new state of the order items of the order",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="OrderItemDeliveredObject",
+     *                  type="object",
+     *                  description="Object containing the order items to set as delivered",
+     *                  @OA\Property(
+     *                      property="items",
+     *                      description="Array of OrderItems",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          @OA\Property(
+     *                              property="itemUUID",
+     *                              description="The unique identifier of the item",
+     *                              type="string"
+     *                          ),
+     *                          @OA\Property(
+     *                              property="delivered",
+     *                              description="Boolean to indicate that item is to be set as delivered",
+     *                              type="boolean"
+     *                          )
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param $orderId
      * @param Request $request
      * @return ResponseInterface
@@ -108,7 +225,7 @@ class Delivered
         foreach ($items as $item) {
             $item = array_change_key_case($item, CASE_LOWER);
             $orderItem = $order->getItem($item['itemuuid']);
-            if($orderItem !== null) {
+            if ($orderItem !== null) {
                 $orderItem->setDelivered(new DateTime());
             }
         }

@@ -49,12 +49,94 @@ class Delete
     }
 
     /**
+     *  @OA\Delete(
+     *      path="/api/v1/orders/{orderId}",
+     *      summary="Deletes or cancels order",
+     *      description="For requests from authorized users order is deleted, otherwise orderstatus is set to canceled",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="orderId",
+     *          in="path",
+     *          description="The order to delete",
+     *          required=true
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="Delete/Cancel",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $orderId
      * @return ResponseInterface
      */
     public function __invoke(Request $request, string $orderId): ResponseInterface
     {
+        $this->authorizer->authorizeToRoles(
+            $request,
+            [
+                'user.roles.customer',
+                'user.roles.employee',
+                'user.roles.admin',
+                'user.roles.super',
+            ]
+        );
+
         if ($this->isAdmin($request)) {
             try {
                 $this->documentManager->createQueryBuilder(Order::class)
@@ -81,10 +163,10 @@ class Delete
             ]);
         }
 
-        if($isOrderOwner) {
+        if ($isOrderOwner) {
             $order->setOrderStatus(OrderStatus::CANCELED);
         }
-        if($this->isEmployee($request)) {
+        if ($this->isEmployee($request)) {
             $order->setOrderStatus(OrderStatus::CANCELED);
         }
         try {

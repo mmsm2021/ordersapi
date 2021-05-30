@@ -47,6 +47,97 @@ class ReadLocation
     }
 
     /**
+     *  @OA\Get(
+     *      path="/api/v1/orders/location/{locationId}",
+     *      summary="Reads orders from the specified location",
+     *      description="Returns a JSON representation of orders from the specified location, paginated, these orders are returned as specified in query params",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="sortBy",
+     *          in="path",
+     *          description="data to sort orders by",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="page",
+     *          in="path",
+     *          description="The desired page",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="size",
+     *          in="path",
+     *          description="The desired page size",
+     *          required=true
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="LocationOrdersObject",
+     *                  type="object",
+     *                  description="Object containing an array of orders",
+     *                  @OA\Property(
+     *                      property="orders",
+     *                      description="Array orders",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          ref="#/components/schemas/Order"
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $locationId
      * @return ResponseInterface

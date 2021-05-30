@@ -49,6 +49,85 @@ class ReadUser
     }
 
     /**
+     *  @OA\Get(
+     *      path="/api/v1/orders/user/{userId}",
+     *      summary="Reads all orders for the specified user",
+     *      description="Returns a JSON representation of all orders for the specified user",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="userId",
+     *          in="path",
+     *          description="The user for who to get orders",
+     *          required=true
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="UserOrdersObject",
+     *                  type="object",
+     *                  description="Object containing an array of orders",
+     *                  @OA\Property(
+     *                      property="orders",
+     *                      description="Array orders",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          ref="#/components/schemas/Order"
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $userId
      * @return ResponseInterface
@@ -67,7 +146,7 @@ class ReadUser
         );
         $isRequestingUser = $this->isRequestingUser($request->getAttribute('token'), $userId);
         $isEmployee = $this->isEmployee($request);
-        if($isRequestingUser || $isEmployee) {
+        if ($isRequestingUser || $isEmployee) {
             try {
                 $orders = $this->documentManager->getRepository(Order::class)->findBy([
                     'customer' => $userId
@@ -101,7 +180,7 @@ class ReadUser
      */
     private function isRequestingUser(JWT $token, string $user): bool
     {
-        if($token instanceof JWT && ($token->getClaims()['sub'] === $user)) {
+        if ($token instanceof JWT && ($token->getClaims()['sub'] === $user)) {
             return true;
         }
         return false;

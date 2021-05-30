@@ -60,7 +60,7 @@ class Order
     private ?string $customer = null;
 
     /**
-     * Array of items purchased
+     * Array of OrderItem
      * @var Collection
      * @OA\Property(
      *  @OA\Items(
@@ -315,7 +315,7 @@ class Order
         return $this->orderDate;
     }
 
-    /** Mapping of document */
+    /** Mapping of Order */
     public static function loadMetaData(ClassMetadata $metadata)
     {
         $metadata->setDatabase('FranDine');

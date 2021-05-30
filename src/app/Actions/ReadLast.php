@@ -47,6 +47,91 @@ class ReadLast
     }
 
     /**
+     *  @OA\Get(
+     *      path="/api/v1/orders/{locationId}/last/{n}",
+     *      summary="Reads the last {n} orders from the specified location",
+     *      description="Returns a JSON representation of the requested amount of orders, if less is available, this lesser amount is returned",
+     *      tags={"Orders"},
+     *      @OA\Parameter(
+     *          name="Authorization",
+     *          in="header",
+     *          description="Bearer {id-token}",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="locationId",
+     *          in="path",
+     *          description="The location for which to get orders",
+     *          required=true
+     *      ),
+     *      @OA\Parameter(
+     *          name="n",
+     *          in="path",
+     *          description="The amount of orders to get",
+     *          required=true
+     *      ),
+     *      @OA\Response(
+     *          response=200,
+     *          description="successful operation",
+     *          @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  schema="LastOrdersObject",
+     *                  type="object",
+     *                  description="Object containing an array of orders",
+     *                  @OA\Property(
+     *                      property="orders",
+     *                      description="Array orders",
+     *                      type="array",
+     *                      @OA\Items(
+     *                          ref="#/components/schemas/Order"
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=400,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=401,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *              mediaType="application/json",
+     *              @OA\Schema(
+     *                  @OA\Property(
+     *                      property="error",
+     *                      type="boolean"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="string"
+     *                  ),
+     *                  @OA\Property(
+     *                      property="code",
+     *                      type="number"
+     *                  )
+     *              )
+     *          )
+     *      )
+     *  )
+     */
+
+    /**
      * @param Request $request
      * @param string $locationId
      * @param int $n

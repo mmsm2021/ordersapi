@@ -144,7 +144,7 @@ class OrderItem
         return $itemArray;
     }
 
-    /** Mapping of document */
+    /** Mapping of OrderItem */
     public static function loadMetaData(ClassMetadata $metadata)
     {
         $metadata->isEmbeddedDocument = true;
