@@ -8,3 +8,5 @@ src/app/Proxies/*
 src/var
 src/vendor
 swagger.json
+src/swagger.json
+src/static/swagger.json
