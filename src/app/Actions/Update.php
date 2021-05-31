@@ -76,7 +76,10 @@ class Update
      *          name="orderID",
      *          in="path",
      *          description="The id of the order to be updated",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\RequestBody(
      *          required=true,

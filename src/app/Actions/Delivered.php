@@ -66,7 +66,10 @@ class Delivered
      *          name="orderId",
      *          in="path",
      *          description="The order on which to set items delivered",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\RequestBody(
      *          required=true,

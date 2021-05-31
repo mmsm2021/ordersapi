@@ -58,7 +58,10 @@ class ReadLocation
      *          name="sortBy",
      *          in="path",
      *          description="data to sort orders by",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Parameter(
      *          name="page",

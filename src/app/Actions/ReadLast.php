@@ -67,7 +67,10 @@ class ReadLast
      *          name="n",
      *          in="path",
      *          description="The amount of orders to get",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Response(
      *          response=200,
