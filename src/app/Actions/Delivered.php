@@ -56,6 +56,43 @@ class Delivered
     }
 
     /**
+     * @OA\Schema(
+     *     schema="OrderItemDeliveredObject",
+     *     type="object",
+     *     description="Object containing the order items to set as delivered",
+     *     @OA\Property(
+     *         property="itemUUID",
+     *         description="The unique identifier of the item",
+     *         type="string"
+     *     ),
+     *     @OA\Property(
+     *         property="delivered",
+     *         description="Boolean to indicate that item is to be set as delivered",
+     *         type="boolean"
+     *     )
+     * )
+     * @OA\Schema(
+     *     schema="OrderItemDeliveredObjectCollection",
+     *     type="object",
+     *     description="Object containing the order items to set as delivered",
+     *     @OA\Property(
+     *         property="items",
+     *         description="Array of OrderItems",
+     *         type="array",
+     *         @OA\Items(ref="#/components/schemas/OrderItemDeliveredObject")
+     *     )
+     * )
+     * @OA\Schema(
+     *     schema="NewOrderItemDeliveredObjectCollection",
+     *     type="object",
+     *     description="Object containing the order items to set as delivered",
+     *     @OA\Property(
+     *         property="items",
+     *         description="Array of OrderItems",
+     *         type="array",
+     *         @OA\Items(ref="#/components/schemas/OrderItem")
+     *     )
+     * )
      * @OA\Patch(
      *      path="/api/v1/orders/delivered/{orderId}",
      *      summary="Sets specified item(s) as delivered, on specified order",
@@ -74,117 +111,27 @@ class Delivered
      *      @OA\RequestBody(
      *          required=true,
      *          description="The OrderItems to set as delivered",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  schema="OrderItemDeliveredObject",
-     *                  type="object",
-     *                  description="Object containing the order items to set as delivered",
-     *                  @OA\Property(
-     *                      property="items",
-     *                      description="Array of OrderItems",
-     *                      type="array",
-     *                      @OA\Items(
-     *                          @OA\Property(
-     *                              property="itemUUID",
-     *                              description="The unique identifier of the item",
-     *                              type="string"
-     *                          ),
-     *                          @OA\Property(
-     *                              property="delivered",
-     *                              description="Boolean to indicate that item is to be set as delivered",
-     *                              type="boolean"
-     *                          )
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/OrderItemDeliveredObjectCollection")
      *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Replies with JSON object, containing the new state of the order items of the order",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  schema="OrderItemDeliveredObject",
-     *                  type="object",
-     *                  description="Object containing the order items to set as delivered",
-     *                  @OA\Property(
-     *                      property="items",
-     *                      description="Array of OrderItems",
-     *                      type="array",
-     *                      @OA\Items(
-     *                          @OA\Property(
-     *                              property="itemUUID",
-     *                              description="The unique identifier of the item",
-     *                              type="string"
-     *                          ),
-     *                          @OA\Property(
-     *                              property="delivered",
-     *                              description="Boolean to indicate that item is to be set as delivered",
-     *                              type="boolean"
-     *                          )
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/NewOrderItemDeliveredObjectCollection")
      *      ),
      *      @OA\Response(
      *          response=400,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="string"
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      ),
      *      @OA\Response(
      *          response=401,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      ),
      *      @OA\Response(
      *          response=500,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      )
      *  )
      */

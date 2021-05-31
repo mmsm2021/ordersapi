@@ -86,111 +86,24 @@ class Create
      *      tags={"Orders"},
      *      security={{ "bearerAuth":{} }},
      *      @OA\RequestBody(
-     *          required=true,
-     *          description="The Order to create",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  schema="OrderCreateObject",
-     *                  type="object",
-     *                  description="Order creation JSON object",
-     *                  @OA\Property(
-     *                      property="location",
-     *                      description="Order- location/restaurant name",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="locationId",
-     *                      description="UUID of Order- location/restaurant",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="items",
-     *                      description="Array OrderItems",
-     *                      type="array",
-     *                      @OA\Items(
-     *                          @OA\Property(
-     *                              property="nr",
-     *                              description="The item menu number",
-     *                              type="number"
-     *                          ),
-     *                          @OA\Property(
-     *                              property="name",
-     *                              description="Name of the item",
-     *                              type="string"
-     *                          ),
-     *                          @OA\Property(
-     *                              property="cost",
-     *                              description="Prize of the item",
-     *                              type="string"
-     *                          )
-     *                      )
-     *                  ),
-     *                  @OA\Property(
-     *                      property="discount",
-     *                      description="The discount percentage applied on the order",
-     *                      type="number"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="total",
-     *                      description="The total amount payed for the order",
-     *                      type="number"
-     *                  )
-     *              )
-     *          )
+     *         required=true,
+     *         description="The Location that you want to create.",
+     *         @OA\JsonContent(ref="#/components/schemas/OrderCreateObject"),
      *      ),
      *      @OA\Response(
      *          response=200,
      *          description="Will reply with the orderId of the newly created order",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="orderId",
-     *                      type="number"
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/OrderCreatedObject")
      *      ),
      *      @OA\Response(
      *          response=401,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      ),
      *      @OA\Response(
      *          response=500,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      )
      *  )
      */

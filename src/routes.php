@@ -5,6 +5,19 @@
  */
 
 /**
+ * @OA\Schema(
+ *   schema="error",
+ *   type="object",
+ *   @OA\Property(property="error", type="boolean"),
+ *   @OA\Property(
+ *     property="message",
+ *     type="array",
+ *     @OA\Items(type="string")
+ *   )
+ * )
+ */
+
+/**
  * @OA\Components(
  *     @OA\SecurityScheme(
  *         securityScheme="bearerAuth",

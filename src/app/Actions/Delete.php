@@ -66,74 +66,23 @@ class Delete
      *          )
      *      ),
      *      @OA\Response(
-     *          response=200,
-     *          description="successful operation",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="Delete/Cancel",
-     *                      type="string"
-     *                  )
-     *              )
-     *          )
+     *          response=204,
+     *          description="successful operation"
      *      ),
      *      @OA\Response(
      *          response=400,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="string"
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      ),
      *      @OA\Response(
      *          response=401,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      ),
      *      @OA\Response(
      *          response=500,
      *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *                  mediaType="application/json",
-     *                  @OA\Schema(
-     *                      @OA\Property(
-     *                          property="error",
-     *                          type="boolean"
-     *                   ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="array",
-     *                      @OA\Items(
-     *                              type="string"
-     *                      )
-     *                  )
-     *              )
-     *          )
+     *          @OA\JsonContent(ref="#/components/schemas/error")
      *      )
      *  )
      */
@@ -159,9 +108,7 @@ class Delete
 
             $this->documentManager->createQueryBuilder(Order::class)
                 ->findAndRemove()->field('orderId')->equals($orderId)->getQuery()->execute();
-            return $this->responseFactory->create(200, [
-                'Delete' => 'success',
-            ]);
+            return $this->responseFactory->create(204);
 
         } else {
             /** @var Order $order */
@@ -176,9 +123,7 @@ class Delete
 //            }
                 $this->documentManager->persist($order);
                 $this->documentManager->flush();
-                return $this->responseFactory->create(200, [
-                    'Cancel' => 'success',
-                ]);
+                return $this->responseFactory->create(204);
             }
         }
         return $this->responseFactory->create(400, [
