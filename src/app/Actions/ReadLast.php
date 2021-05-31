@@ -58,7 +58,10 @@ class ReadLast
      *          name="locationId",
      *          in="path",
      *          description="The location for which to get orders",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Parameter(
      *          name="n",

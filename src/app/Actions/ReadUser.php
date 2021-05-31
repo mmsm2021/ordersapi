@@ -60,7 +60,10 @@ class ReadUser
      *          name="userId",
      *          in="path",
      *          description="The user for who to get orders",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Response(
      *          response=200,

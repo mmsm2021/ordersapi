@@ -60,7 +60,10 @@ class Read
      *          name="orderId",
      *          in="path",
      *          description="The order to get",
-     *          required=true
+     *          required=true,
+     *          @OA\Schema(
+     *              type="string"
+     *          )
      *      ),
      *      @OA\Response(
      *          response=200,
