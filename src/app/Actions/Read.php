@@ -8,7 +8,6 @@ use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use SimpleJWT\JWT;
-use Slim\Exception\HttpException;
 use Slim\Exception\HttpUnauthorizedException;
 use Slim\Psr7\Request;
 use Throwable;
@@ -43,24 +42,20 @@ class Read
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory,
         Authorizer $authorizer
-    ) {
+    )
+    {
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
         $this->authorizer = $authorizer;
     }
 
     /**
-     *  @OA\Get(
+     * @OA\Get(
      *      path="/api/v1/orders/{orderId}",
      *      summary="Reads requested order from database",
      *      description="Returns a JSON representation of the requested order",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\Parameter(
      *          name="orderId",
      *          in="path",
@@ -73,39 +68,21 @@ class Read
      *          @OA\JsonContent(ref="#/components/schemas/Order"),
      *      ),
      *      @OA\Response(
-     *          response=400,
-     *          description="will contain a JSON object with a message.",
-     *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="message",
-     *                      type="string"
-     *                  )
-     *              )
-     *          )
-     *      ),
-     *      @OA\Response(
      *          response=401,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -114,15 +91,35 @@ class Read
      *          response=404,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
      *                      type="string"
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
+     *                  @OA\Property(
+     *                      property="message",
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -147,30 +144,21 @@ class Read
                 'user.roles.super',
             ]
         );
-        try {
-            $token = $request->getAttribute('token');
-            if (!($token instanceof JWT)) {
-                throw new HttpUnauthorizedException($request, 'Unauthorized');
-            }
-            /** @var Order $order */
-            $order = $this->documentManager->find(Order::class, $orderId);
 
-            if (($order instanceof Order) && ($this->isOrderOwner($token, $order) || $this->isEmployee($request))) {
-                return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
-            }
-            return $this->responseFactory->create(404, [
-                'error' => true,
-                'message' => 'Order not found / Does not exist',
-            ]);
-        } catch (Throwable $e) {
-            if ($e instanceof HttpException) {
-                throw $e;
-            }
-            return $this->responseFactory->create(400, [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ]);
+        $token = $request->getAttribute('token');
+        if (!($token instanceof JWT)) {
+            throw new HttpUnauthorizedException($request, 'Unauthorized');
         }
+        /** @var Order $order */
+        $order = $this->documentManager->find(Order::class, $orderId);
+
+        if (($order instanceof Order) && ($this->isOrderOwner($token, $order) || $this->isEmployee($request))) {
+            return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
+        }
+        return $this->responseFactory->create(404, [
+            'error' => true,
+            'message' => 'Order not found / Does not exist',
+        ]);
     }
 
     /**

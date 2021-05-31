@@ -1267,16 +1267,16 @@
         },
         {
             "name": "mmsm/service-lib",
-            "version": "2.0.2",
+            "version": "2.2.3",
             "source": {
                 "type": "git",
                 "url": "https://github.com/mmsm2021/service-lib.git",
-                "reference": "0dd7fc3a911ec2326740327ccbdf341179359602"
+                "reference": "5d5f339ed3b13796c4fb18429d6add25fe13a9ae"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/mmsm2021/service-lib/zipball/0dd7fc3a911ec2326740327ccbdf341179359602",
-                "reference": "0dd7fc3a911ec2326740327ccbdf341179359602",
+                "url": "https://api.github.com/repos/mmsm2021/service-lib/zipball/5d5f339ed3b13796c4fb18429d6add25fe13a9ae",
+                "reference": "5d5f339ed3b13796c4fb18429d6add25fe13a9ae",
                 "shasum": ""
             },
             "require": {
@@ -1310,10 +1310,10 @@
             ],
             "description": "Service Library",
             "support": {
-                "source": "https://github.com/mmsm2021/service-lib/tree/2.0.2",
+                "source": "https://github.com/mmsm2021/service-lib/tree/2.2.3",
                 "issues": "https://github.com/mmsm2021/service-lib/issues"
             },
-            "time": "2021-05-26T10:08:00+00:00"
+            "time": "2021-05-31T09:33:21+00:00"
         },
         {
             "name": "mongodb/mongodb",

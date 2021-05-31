@@ -4,6 +4,19 @@
  * @OA\Info(title="OrdersAPI", version="1.0.0")
  */
 
+/**
+ * @OA\Components(
+ *     @OA\SecurityScheme(
+ *         securityScheme="bearerAuth",
+ *         type="http",
+ *         name="Authorization",
+ *         in="header",
+ *         scheme="bearer",
+ *         bearerFormat="JWT"
+ *     )
+ * )
+ */
+
 use MMSM\Lib\AuthorizationMiddleware;
 use Slim\Middleware\BodyParsingMiddleware;
 use Slim\Middleware\ErrorMiddleware;

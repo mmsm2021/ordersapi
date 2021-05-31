@@ -6,7 +6,6 @@ use App\Documents\Order;
 use App\DTO\Validators\OrderValidator;
 use App\Factories\OrderItemFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
-use Doctrine\ODM\MongoDB\MongoDBException;
 use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Container\ContainerInterface;
@@ -70,7 +69,8 @@ class Create
         Authorizer $authorizer,
         ContainerInterface $container,
         OrderItemFactory $orderItemFactory
-    ) {
+    )
+    {
         $this->documentManager = $documentManager;
         $this->orderValidator = $orderValidator;
         $this->responseFactory = $responseFactory;
@@ -80,16 +80,11 @@ class Create
     }
 
     /**
-     *  @OA\Post(
+     * @OA\Post(
      *      path="/api/v1/orders",
      *      summary="Creates new order from carried JSON",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\RequestBody(
      *          required=true,
      *          description="The Order to create",
@@ -156,44 +151,43 @@ class Create
      *                  )
      *              )
      *          )
-     *      ), 
+     *      ),
      *      @OA\Response(
-     *          response=400,
+     *          response=401,
      *          description="will contain a JSON object with a message.",
-     *          @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
      *                      type="array",
-     *                      @OA\items(
-     *                          type="string"
+     *                      @OA\Items(
+     *                              type="string"
      *                      )
      *                  )
      *              )
      *          )
      *      ),
      *      @OA\Response(
-     *          response=401,
+     *          response=500,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -210,35 +204,27 @@ class Create
      */
     public function __invoke(Request $request): ResponseInterface
     {
-        try {
-            $body = $request->getParsedBody();
-            if (empty($body)) {
-                throw new HttpBadRequestException(
-                    $request,
-                    'Invalid body.'
-                );
-            }
-            $this->orderValidator->validate($body);
-            $this->authorizer->authorizeToRoles(
+        $body = $request->getParsedBody();
+        if (empty($body)) {
+            throw new HttpBadRequestException(
                 $request,
-                [
-                    'user.roles.customer',
-                    'user.roles.employee',
-                    'user.roles.admin',
-                    'user.roles.super',
-                ]
-            );
-            $order = $this->createOrder($request->getAttribute('token'), $body);
-            $this->documentManager->persist($order);
-            $this->documentManager->flush();
-            return $this->responseFactory->create(200, ['orderId' => $order->getOrderId()]);
-        } catch (MongoDBException $mongoDBException) {
-            throw new HttpInternalServerErrorException(
-                $request,
-                'Database error occurred',
-                $mongoDBException
+                'Invalid body.'
             );
         }
+        $this->orderValidator->validate($body);
+        $this->authorizer->authorizeToRoles(
+            $request,
+            [
+                'user.roles.customer',
+                'user.roles.employee',
+                'user.roles.admin',
+                'user.roles.super',
+            ]
+        );
+        $order = $this->createOrder($request->getAttribute('token'), $body);
+        $this->documentManager->persist($order);
+        $this->documentManager->flush();
+        return $this->responseFactory->create(200, ['orderId' => $order->getOrderId()]);
     }
 
     /**

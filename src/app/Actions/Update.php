@@ -56,7 +56,8 @@ class Update
         PatchValidator $patchValidator,
         JsonResponseFactory $responseFactory,
         OrderItemFactory $orderItemFactory
-    ) {
+    )
+    {
         $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->patchValidator = $patchValidator;
@@ -65,17 +66,12 @@ class Update
     }
 
     /**
-     *  @OA\Patch(
+     * @OA\Patch(
      *      path="/api/v1/orders/{orderId}",
      *      summary="Updates the order items",
      *      description="For the specified order, items specified in carried JSON are updated as specified, order total is updated accordingly",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\Parameter(
      *          name="orderID",
      *          in="path",
@@ -145,12 +141,12 @@ class Update
      *          response=400,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
      *                      type="string"
@@ -162,19 +158,38 @@ class Update
      *          response=401,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
+     *                  )
+     *              )
+     *          )
+     *      ),
+     *      @OA\Response(
+     *          response=500,
+     *          description="will contain a JSON object with a message.",
+     *              @OA\MediaType(
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      property="message",
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -199,37 +214,25 @@ class Update
             ]
         );
 
-        try {
-            $body = $request->getParsedBody();
-            $this->patchValidator->validate($body);
-            /** @var Order $order */
-            $order = $this->documentManager->find(Order::class, $orderId);
-            $itemsOnOrder = $this->isItemOnOrder($order, $body);
-            if ($itemsOnOrder) {
-                $order = $this->updateOrder($order, $body);
-                $this->documentManager->persist($order);
-                $this->documentManager->flush();
-                return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
-            } else {
-                return $this->responseFactory->create(400, [
-                    'error' => true,
-                    'message' => 'Item not on order'
-                ]);
-            }
-        } catch (ValidationException $e) {
+        $body = $request->getParsedBody();
+        $this->patchValidator->validate($body);
+        /** @var Order $order */
+        $order = $this->documentManager->find(Order::class, $orderId);
+        $itemsOnOrder = $this->isItemOnOrder($order, $body);
+        if ($itemsOnOrder) {
+            $order = $this->updateOrder($order, $body);
+            $this->documentManager->persist($order);
+            $this->documentManager->flush();
+            return $this->responseFactory->create(200, ['orders' => $order->toArray()]);
+        } else {
             return $this->responseFactory->create(400, [
                 'error' => true,
-                'message' => $e->getMessage(),
-            ]);
-        } catch (Throwable $e) {
-            return $this->responseFactory->create(400, [
-                'error' => true,
-                'message' => $e->getMessage(),
+                'message' => 'Item not on order'
             ]);
         }
     }
 
-    /** 
+    /**
      * Updates the order items based on patch JSON,
      * also corrects the prize and discount
      * @param Order $order
@@ -259,9 +262,9 @@ class Update
                 case 'discount':
                     $order->setDiscount($value);
                     break;
-                    /*case 'total':
-                    $order->setTotal($value);
-                    break;*/
+                /*case 'total':
+                $order->setTotal($value);
+                break;*/
             }
         }
         $order->setTotal($this->calculateTotal($order));

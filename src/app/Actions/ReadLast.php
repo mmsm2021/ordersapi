@@ -40,24 +40,20 @@ class ReadLast
         Authorizer $authorizer,
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
-    ) {
+    )
+    {
         $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
     }
 
     /**
-     *  @OA\Get(
+     * @OA\Get(
      *      path="/api/v1/orders/{locationId}/last/{n}",
      *      summary="Reads the last {n} orders from the specified location",
      *      description="Returns a JSON representation of the requested amount of orders, if less is available, this lesser amount is returned",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\Parameter(
      *          name="locationId",
      *          in="path",
@@ -91,39 +87,41 @@ class ReadLast
      *          )
      *      ),
      *      @OA\Response(
-     *          response=400,
+     *          response=401,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
      *      ),
      *      @OA\Response(
-     *          response=401,
+     *          response=500,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -138,7 +136,7 @@ class ReadLast
      * @return ResponseInterface
      * @throws Throwable
      */
-    public function __invoke(Request  $request, string $locationId, int $n): ResponseInterface
+    public function __invoke(Request $request, string $locationId, int $n): ResponseInterface
     {
         $this->authorizer->authorizeToRoles(
             $request,
@@ -148,20 +146,14 @@ class ReadLast
                 'user.roles.super',
             ]
         );
-        try {
-            $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
-            $n = $count < $n ? $count : $n;
-            $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->skip($count - $n)->getQuery()->execute();
-            $sendBack = [];
-            foreach ($orders as $order) {
-                $sendBack[] = $order->toArray();
-            }
-            return $this->responseFactory->create(200, ['orders' => $sendBack]);
-        } catch (Throwable $e) {
-            return $this->responseFactory->create(400, [
-                'error' => true,
-                'message' => $e->getMessage()()
-            ]);
+
+        $count = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->count()->getQuery()->execute();
+        $n = $count < $n ? $count : $n;
+        $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->skip($count - $n)->getQuery()->execute();
+        $sendBack = [];
+        foreach ($orders as $order) {
+            $sendBack[] = $order->toArray();
         }
+        return $this->responseFactory->create(200, ['orders' => $sendBack]);
     }
 }

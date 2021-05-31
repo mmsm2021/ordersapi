@@ -42,24 +42,20 @@ class ReadUser
         Authorizer $authorizer,
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
-    ) {
+    )
+    {
         $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
     }
 
     /**
-     *  @OA\Get(
+     * @OA\Get(
      *      path="/api/v1/orders/user/{userId}",
      *      summary="Reads all orders for the specified user",
      *      description="Returns a JSON representation of all orders for the specified user",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\Parameter(
      *          name="userId",
      *          in="path",
@@ -87,39 +83,41 @@ class ReadUser
      *          )
      *      ),
      *      @OA\Response(
-     *          response=400,
+     *          response=401,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
      *      ),
      *      @OA\Response(
-     *          response=401,
+     *          response=500,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -147,24 +145,14 @@ class ReadUser
         $isRequestingUser = $this->isRequestingUser($request->getAttribute('token'), $userId);
         $isEmployee = $this->isEmployee($request);
         if ($isRequestingUser || $isEmployee) {
-            try {
-                $orders = $this->documentManager->getRepository(Order::class)->findBy([
-                    'customer' => $userId
-                ]);
-                $sendBack = [];
-                foreach ($orders as $order) {
-                    $sendBack[] = $order->toArray();
-                }
-                return $this->responseFactory->create(200, ['orders' => $sendBack]);
-            } catch (Throwable $e) {
-                if ($e instanceof HttpException) {
-                    throw $e;
-                }
-                return $this->responseFactory->create(400, [
-                    'error' => true,
-                    'message' => $e->getMessage(),
-                ]);
+            $orders = $this->documentManager->getRepository(Order::class)->findBy([
+                'customer' => $userId
+            ]);
+            $sendBack = [];
+            foreach ($orders as $order) {
+                $sendBack[] = $order->toArray();
             }
+            return $this->responseFactory->create(200, ['orders' => $sendBack]);
         }
         return $this->responseFactory->create(401, [
             'error' => true,

@@ -37,27 +37,23 @@ class ReadLocation
      * @param JsonResponseFactory $responseFactory
      */
     public function __construct(
-        Authorizer  $authorizer,
+        Authorizer $authorizer,
         DocumentManager $documentManager,
         JsonResponseFactory $responseFactory
-    ) {
+    )
+    {
         $this->authorizer = $authorizer;
         $this->documentManager = $documentManager;
         $this->responseFactory = $responseFactory;
     }
 
     /**
-     *  @OA\Get(
+     * @OA\Get(
      *      path="/api/v1/orders/location/{locationId}",
      *      summary="Reads orders from the specified location",
      *      description="Returns a JSON representation of orders from the specified location, paginated, these orders are returned as specified in query params",
      *      tags={"Orders"},
-     *      @OA\Parameter(
-     *          name="Authorization",
-     *          in="header",
-     *          description="Bearer {id-token}",
-     *          required=true
-     *      ),
+     *      security={{ "bearerAuth":{} }},
      *      @OA\Parameter(
      *          name="sortBy",
      *          in="path",
@@ -97,39 +93,41 @@ class ReadLocation
      *          )
      *      ),
      *      @OA\Response(
-     *          response=400,
+     *          response=401,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
      *      ),
      *      @OA\Response(
-     *          response=401,
+     *          response=500,
      *          description="will contain a JSON object with a message.",
      *              @OA\MediaType(
-     *              mediaType="application/json",
-     *              @OA\Schema(
-     *                  @OA\Property(
-     *                      property="error",
-     *                      type="boolean"
-     *                  ),
+     *                  mediaType="application/json",
+     *                  @OA\Schema(
+     *                      @OA\Property(
+     *                          property="error",
+     *                          type="boolean"
+     *                   ),
      *                  @OA\Property(
      *                      property="message",
-     *                      type="string"
-     *                  ),
-     *                  @OA\Property(
-     *                      property="code",
-     *                      type="number"
+     *                      type="array",
+     *                      @OA\Items(
+     *                              type="string"
+     *                      )
      *                  )
      *              )
      *          )
@@ -153,21 +151,14 @@ class ReadLocation
                 'user.roles.super',
             ]
         );
-        try {
-            $sortBy = $request->getQueryParams()['sortBy'];
-            $page = $request->getQueryParams()['page'] - 1;
-            $size = $request->getQueryParams()['size'];
-            $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->sort($sortBy, 'desc')->limit($size)->skip($page * $size)->getQuery()->execute();
-            $sendBack = [];
-            foreach ($orders as $order) {
-                $sendBack[] = $order->toArray();
-            }
-            return $this->responseFactory->create(200, ['orders' => $sendBack]);
-        } catch (Throwable $e) {
-            return $this->responseFactory->create(400, [
-                'error' => true,
-                'message' => $e->getMessage(),
-            ]);
+        $sortBy = $request->getQueryParams()['sortBy'];
+        $page = $request->getQueryParams()['page'] - 1;
+        $size = $request->getQueryParams()['size'];
+        $orders = $this->documentManager->createQueryBuilder(Order::class)->field('locationId')->equals($locationId)->sort($sortBy, 'desc')->limit($size)->skip($page * $size)->getQuery()->execute();
+        $sendBack = [];
+        foreach ($orders as $order) {
+            $sendBack[] = $order->toArray();
         }
+        return $this->responseFactory->create(200, ['orders' => $sendBack]);
     }
 }
