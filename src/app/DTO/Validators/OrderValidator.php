@@ -20,26 +20,6 @@ class OrderValidator
      *     )
      * )
      * @OA\Schema(
-     *     schema="OrderItemCreateObject",
-     *     type="object",
-     *     description="Order Item creation JSON object",
-     *     @OA\Property(
-     *         property="nr",
-     *         description="The item menu number",
-     *         type="number"
-     *     ),
-     *     @OA\Property(
-     *         property="name",
-     *         description="Name of the item",
-     *         type="string"
-     *     ),
-     *     @OA\Property(
-     *         property="cost",
-     *         description="Prize of the item",
-     *         type="string"
-     *     )
-     * )
-     * @OA\Schema(
      *     schema="OrderCreateObject",
      *     type="object",
      *     description="Order creation JSON object",
@@ -49,24 +29,14 @@ class OrderValidator
      *         type="string"
      *     ),
      *     @OA\Property(
-     *         property="locationId",
-     *         description="UUID of Order- location/restaurant",
-     *         type="string"
-     *     ),
-     *     @OA\Property(
      *         property="items",
      *         description="Array OrderItems",
      *         type="array",
-     *         @OA\Items(ref="#/components/schemas/OrderItemCreateObject")
+     *         @OA\Items(type="string")
      *     ),
      *     @OA\Property(
      *         property="discount",
      *         description="The discount percentage applied on the order",
-     *         type="number"
-     *     ),
-     *     @OA\Property(
-     *         property="total",
-     *         description="The total amount payed for the order",
      *         type="number"
      *     )
      * )
@@ -76,12 +46,8 @@ class OrderValidator
     {
         v::arrayType()->notEmpty()
             ->key('location', v::stringType()->notEmpty(), true)
-            ->key('locationId', v::stringType()->notEmpty()->uuid(4), true)
-            //->key('server', v::stringType()->notEmpty(), true)
-            //->key('customer', v::stringType()->notEmpty(), true)
             ->key('items', v::ArrayType()->notEmpty()->each(v::stringType()->notEmpty()), true)
-            ->key('discount', v::intType()->notEmpty(), true)
-            ->key('total', v::intType()->notEmpty(), true)
+            ->key('discount', v::intType()->notEmpty(), false)
             ->check($order);
     }
 }

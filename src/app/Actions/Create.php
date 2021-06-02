@@ -4,6 +4,7 @@ namespace App\Actions;
 
 use App\Documents\Order;
 use App\DTO\Validators\OrderValidator;
+use App\DTO\Validators\QuoteValidator;
 use App\Factories\OrderItemFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Authorizer;
@@ -62,6 +63,11 @@ class Create
     private JwtHandler $jwtHandler;
 
     /**
+     * @var QuoteValidator
+     */
+    private QuoteValidator $quoteValidator;
+
+    /**
      * Create constructor.
      * @param DocumentManager $documentManager
      * @param OrderValidator $orderValidator
@@ -70,6 +76,7 @@ class Create
      * @param ContainerInterface $container
      * @param OrderItemFactory $orderItemFactory
      * @param JwtHandler $jwtHandler
+     * @param QuoteValidator $quoteValidator
      */
     public function __construct(
         DocumentManager $documentManager,
@@ -78,7 +85,8 @@ class Create
         Authorizer $authorizer,
         ContainerInterface $container,
         OrderItemFactory $orderItemFactory,
-        JwtHandler $jwtHandler
+        JwtHandler $jwtHandler,
+        QuoteValidator $quoteValidator
     )
     {
         $this->documentManager = $documentManager;
@@ -88,6 +96,7 @@ class Create
         $this->container = $container;
         $this->orderItemFactory = $orderItemFactory;
         $this->jwtHandler = $jwtHandler;
+        $this->quoteValidator = $quoteValidator;
     }
 
     /**
@@ -159,56 +168,58 @@ class Create
      */
     public function createOrder(Request $request): Order
     {
+        $isSuperAdmin = $this->authorizer->hasRole($request, 'user.roles.super');
         $data = $request->getParsedBody();
-        $token = $request->getAttribute('token');
         $order = new Order();
         $order->setLocation($data['location']);
-        $order->setLocationId($data['locationId']);
-        if ($this->isCustomer($token)) {
-            $order->setCustomer($token->getClaim('sub'));
+        if ($this->authorizer->hasRole($request, 'user.roles.customer')) {
+            $order->setCustomer($request->getAttribute('token')->getClaim('sub'));
         } else {
-            $order->setServer($token->getClaim('sub'));
+            $order->setServer($request->getAttribute('token')->getClaim('sub'));
         }
 
         $tokens = [];
         $failedTokens = [];
 
+        $orderTotal = '0';
+        $locationId = null;
         foreach ($data['items'] as $item) {
             try{
-                $tokens[] = $this->jwtHandler->decode($item);
+                $decodedToken = $this->jwtHandler->decode($item);
+                $claims = $decodedToken->getClaims();
+                $this->quoteValidator->check($claims);
+                $tokens[] = $decodedToken;
+                $orderTotal = bcadd($orderTotal, $claims['totalPrice']);
+                if ($locationId === null) {
+                    $locationId = $claims['product']['locationId'];
+                } else {
+                    if($claims['product']['locationId'] != $locationId) {
+                        throw new HttpBadRequestException(
+                            $request,
+                            'You cannot order products for different locations at the same time.'
+                        );
+                    }
+                }
             } catch (InvalidTokenException $invalidTokenException) {
                 $failedTokens[] = $item;
             }
         }
-        if(!empty($failedTokens))
-        {
+        if (!empty($failedTokens)) {
             throw new HttpBadRequestException($request, 'One or more invalid tokens received!');
         }
-        $orderTotal = 0;
+        $order->setLocationId($locationId);
         foreach ($tokens as $item) {
             $oi = $this->orderItemFactory->createFromArray($item);
-            $orderTotal += $item->getClaim('totalPrice');
             $order->addItem($oi);
         }
-        $order->setDiscount($data['discount']);
+        if ($isSuperAdmin || (
+                $this->authorizer->hasRoles($request, ['user.roles.employee', 'user.roles.admin']) &&
+                $this->authorizer->isUserInLocation($request, $locationId)
+            )
+        ) {
+            $order->setDiscount($data['discount']);
+        }
         $order->setTotal($orderTotal);
         return $order;
-    }
-
-    /**
-     * Verifies that JWT identifies a user
-     * @param JWT $token
-     * @return bool
-     */
-    protected function isCustomer(JWT $token): bool
-    {
-        $customerRoles = $this->container->get('user.roles.customer');
-        $namespace = $this->container->get('custom.tokenClaim.namespace');
-        foreach ($token->getClaim($namespace . '/roles') as $role) {
-            if (in_array(strtolower($role), $customerRoles)) {
-                return true;
-            }
-        }
-        return false;
     }
 }
