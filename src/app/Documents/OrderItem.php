@@ -30,6 +30,13 @@ class OrderItem
     private int $nr;
 
     /**
+     * Order item product id
+     * @var string
+     * @OA\Property()
+     */
+    private string $productId;
+
+    /**
      * Order item name
      * @var string
      * @OA\Property()
@@ -49,6 +56,20 @@ class OrderItem
      * @OA\Property()
      */
     private ?DateTime $delivered = null;
+
+    /**
+     * Order item quantity
+     * @var int
+     * @OA\Property
+     */
+    private int $qty;
+
+    /**
+     * Order item(s) total cost
+     * @var string
+     * @OA\Property
+     */
+    private string $totalPrice;
 
     /**
      * Order item Unique identifier getter
@@ -74,6 +95,23 @@ class OrderItem
     public function setNr(int $nr): void
     {
         $this->nr = $nr;
+    }
+
+    /**
+     * Order item product number getter and setter
+     * @return string
+     */
+    public function getProductId(): string
+    {
+        return $this->productId;
+    }
+
+    /**
+     * @param $productId
+     */
+    public function setProductId($productId): void
+    {
+        $this->productId = $productId;
     }
 
     /**
@@ -127,14 +165,51 @@ class OrderItem
         $this->delivered = $dateTime;
     }
 
+    /**
+     * Order item quantity getter and setter
+     * @return int
+     */
+    public function getQty(): int
+    {
+        return $this->qty;
+    }
+
+    /**
+     * @param $qty
+     */
+    public function setQty($qty): void
+    {
+        $this->qty = $qty;
+    }
+
+    /**
+     * Order item(s) total price getter and setter
+     * @return string
+     */
+    public function getTotalPrice(): string
+    {
+        return $this->totalPrice;
+    }
+
+    /**
+     * @param $totalPrice
+     */
+    public function setTotalPrice($totalPrice):void
+    {
+        $this->totalPrice = $totalPrice;
+    }
+
     /** Returns items as array */
     public function toArray(): array
     {
         $itemArray = [
             'itemUUID' => $this->getUUID(),
+            'product' => $this->getProductId(),
             'nr'  => $this->getNr(),
             'name'  => $this->getName(),
             'cost'  => $this->getCost(),
+            'qty' => $this->getQty(),
+            'totalPrice' => $this->getTotalPrice(),
         ];
         if ($this->getDelivered() instanceof DateTime) {
             $itemArray['delivered'] = $this->getDelivered()->format(\DateTimeInterface::ISO8601);
@@ -161,6 +236,12 @@ class OrderItem
             'nullable' => false
         ]);
         $metadata->mapField([
+            'name' => 'productId',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => false
+        ]);
+        $metadata->mapField([
             'name' => 'name',
             'id' => false,
             'type' => Type::STRING,
@@ -178,5 +259,18 @@ class OrderItem
             'type' => Type::DATE,
             'nullable' => true
         ]);
+        $metadata->mapField([
+            'name' => 'qty',
+            'id' => false,
+            'type' => Type::INT,
+            'nullable' => true
+        ]);
+        $metadata->mapField([
+            'name' => 'totalPrice',
+            'id' => false,
+            'type' => Type::STRING,
+            'nullable' => true
+        ]);
     }
+
 }

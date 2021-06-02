@@ -7,7 +7,6 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ODM\MongoDB\Mapping\ClassMetadata;
 use Doctrine\ODM\MongoDB\Types\Type;
 use DateTime;
-use OpenApi\Annotations as OA;
 
 /**
  * Representation of an Order Document in MongoDB
@@ -26,7 +25,7 @@ class Order
 {
     /**
      * Order ID
-     * @var string
+     * @var string|null
      * @OA\Property()
      */
     private ?string $orderId;
@@ -93,10 +92,10 @@ class Order
 
     /**
      * Date the order was placed
-     * @var object
+     * @var DateTime|null
      * @OA\Property()
      */
-    private ?DateTime $orderDate = null;
+    private ?DateTime $orderDate;
 
     /** Constructor */
     public function __construct()
@@ -242,17 +241,6 @@ class Order
     public function addItem(OrderItem $item): void
     {
         $this->items->add($item);
-    }
-
-    /**
-     * @param string $itemUUID
-     */
-    private function removeItem(string $itemUUID): void
-    {
-        $item = $this->getItem($itemUUID);
-        if ($item instanceof OrderItem) {
-            $this->getItems()->removeElement($item);
-        }
     }
 
     /**

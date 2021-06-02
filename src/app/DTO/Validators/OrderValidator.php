@@ -79,7 +79,7 @@ class OrderValidator
             ->key('locationId', v::stringType()->notEmpty()->uuid(4), true)
             //->key('server', v::stringType()->notEmpty(), true)
             //->key('customer', v::stringType()->notEmpty(), true)
-            ->key('items', v::ArrayType()->notEmpty(), true)
+            ->key('items', v::ArrayType()->notEmpty()->each(v::stringType()->notEmpty()), true)
             ->key('discount', v::intType()->notEmpty(), true)
             ->key('total', v::intType()->notEmpty(), true)
             ->check($order);

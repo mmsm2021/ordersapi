@@ -8,9 +8,11 @@ use App\Factories\OrderItemFactory;
 use Doctrine\ODM\MongoDB\DocumentManager;
 use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
+use MMSM\Lib\JwtHandler;
 use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
+use SimpleJWT\InvalidTokenException;
 use SimpleJWT\JWT;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpInternalServerErrorException;
@@ -54,6 +56,12 @@ class Create
     private OrderItemFactory $orderItemFactory;
 
     /**
+     * Handler for accessing product tokens
+     * @var JwtHandler
+     */
+    private JwtHandler $jwtHandler;
+
+    /**
      * Create constructor.
      * @param DocumentManager $documentManager
      * @param OrderValidator $orderValidator
@@ -61,6 +69,7 @@ class Create
      * @param Authorizer $authorizer
      * @param ContainerInterface $container
      * @param OrderItemFactory $orderItemFactory
+     * @param JwtHandler $jwtHandler
      */
     public function __construct(
         DocumentManager $documentManager,
@@ -68,7 +77,8 @@ class Create
         JsonResponseFactory $responseFactory,
         Authorizer $authorizer,
         ContainerInterface $container,
-        OrderItemFactory $orderItemFactory
+        OrderItemFactory $orderItemFactory,
+        JwtHandler $jwtHandler
     )
     {
         $this->documentManager = $documentManager;
@@ -77,6 +87,7 @@ class Create
         $this->authorizer = $authorizer;
         $this->container = $container;
         $this->orderItemFactory = $orderItemFactory;
+        $this->jwtHandler = $jwtHandler;
     }
 
     /**
@@ -118,7 +129,7 @@ class Create
     public function __invoke(Request $request): ResponseInterface
     {
         $body = $request->getParsedBody();
-        if (empty($body)) {
+        if (!is_array($body) && empty($body)) {
             throw new HttpBadRequestException(
                 $request,
                 'Invalid body.'
@@ -134,7 +145,7 @@ class Create
                 'user.roles.super',
             ]
         );
-        $order = $this->createOrder($request->getAttribute('token'), $body);
+        $order = $this->createOrder($request);
         $this->documentManager->persist($order);
         $this->documentManager->flush();
         return $this->responseFactory->create(200, ['orderId' => $order->getOrderId()]);
@@ -142,12 +153,14 @@ class Create
 
     /**
      * Creates the order based on the received JSON and info from JWT
-     * @param JWT $token
-     * @param array $data
+     * @param Request $request
      * @return Order $order
+     * @throws HttpBadRequestException
      */
-    public function createOrder(JWT $token, array $data): Order
+    public function createOrder(Request $request): Order
     {
+        $data = $request->getParsedBody();
+        $token = $request->getAttribute('token');
         $order = new Order();
         $order->setLocation($data['location']);
         $order->setLocationId($data['locationId']);
@@ -157,12 +170,28 @@ class Create
             $order->setServer($token->getClaim('sub'));
         }
 
+        $tokens = [];
+        $failedTokens = [];
+
         foreach ($data['items'] as $item) {
+            try{
+                $tokens[] = $this->jwtHandler->decode($item);
+            } catch (InvalidTokenException $invalidTokenException) {
+                $failedTokens[] = $item;
+            }
+        }
+        if(!empty($failedTokens))
+        {
+            throw new HttpBadRequestException($request, 'One or more invalid tokens received!');
+        }
+        $orderTotal = 0;
+        foreach ($tokens as $item) {
             $oi = $this->orderItemFactory->createFromArray($item);
+            $orderTotal += $item->getClaim('totalPrice');
             $order->addItem($oi);
         }
         $order->setDiscount($data['discount']);
-        $order->setTotal($data['total']);
+        $order->setTotal($orderTotal);
         return $order;
     }
 
