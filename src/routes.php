@@ -18,6 +18,14 @@
  */
 
 /**
+ * @OA\Schema(
+ *     schema="quoteToken",
+ *     type="string",
+ *     format="jwt"
+ * )
+ */
+
+/**
  * @OA\Components(
  *     @OA\SecurityScheme(
  *         securityScheme="bearerAuth",

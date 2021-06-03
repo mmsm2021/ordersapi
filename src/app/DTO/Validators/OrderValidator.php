@@ -32,7 +32,7 @@ class OrderValidator
      *         property="items",
      *         description="Array OrderItems",
      *         type="array",
-     *         @OA\Items(type="string")
+     *         @OA\Items(ref="#/components/schemas/quoteToken")
      *     ),
      *     @OA\Property(
      *         property="discount",
