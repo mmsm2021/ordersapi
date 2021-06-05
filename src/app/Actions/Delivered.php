@@ -38,6 +38,7 @@ class Delivered
 
     /**
      * Delivered constructor.
+     * @param Authorizer $authorizer
      * @param DocumentManager $documentManager
      * @param PatchValidator $patchValidator
      * @param JsonResponseFactory $responseFactory
@@ -137,9 +138,11 @@ class Delivered
      */
 
     /**
-     * @param $orderId
      * @param Request $request
+     * @param $orderId
      * @return ResponseInterface
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
+     * @throws \Throwable
      */
     public function __invoke(Request $request, $orderId): ResponseInterface
     {

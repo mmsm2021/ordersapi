@@ -91,6 +91,8 @@ class Delete
      * @param Request $request
      * @param string $orderId
      * @return ResponseInterface
+     * @throws Throwable
+     * @throws \Doctrine\ODM\MongoDB\MongoDBException
      */
     public function __invoke(Request $request, string $orderId): ResponseInterface
     {
@@ -117,10 +119,6 @@ class Delete
 
             if ($isOrderOwner || $this->isEmployee($request)) {
                 $order->setOrderStatus(OrderStatus::CANCELED);
-//            }
-//            if ($this->isEmployee($request)) {
-//                $order->setOrderStatus(OrderStatus::CANCELED);
-//            }
                 $this->documentManager->persist($order);
                 $this->documentManager->flush();
                 return $this->responseFactory->create(204);

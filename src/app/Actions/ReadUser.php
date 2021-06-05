@@ -8,7 +8,6 @@ use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use SimpleJWT\JWT;
-use Slim\Exception\HttpException;
 use Slim\Psr7\Request;
 use Throwable;
 

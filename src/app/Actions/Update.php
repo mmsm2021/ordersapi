@@ -11,7 +11,6 @@ use MMSM\Lib\Authorizer;
 use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
-use Respect\Validation\Exceptions\ValidationException;
 use Slim\Exception\HttpNotFoundException;
 use Slim\Exception\HttpUnauthorizedException;
 use Throwable;
