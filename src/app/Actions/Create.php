@@ -14,7 +14,6 @@ use Psr\Container\ContainerInterface;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use SimpleJWT\InvalidTokenException;
-use SimpleJWT\JWT;
 use Slim\Exception\HttpBadRequestException;
 use Slim\Exception\HttpInternalServerErrorException;
 use Throwable;
@@ -87,8 +86,7 @@ class Create
         OrderItemFactory $orderItemFactory,
         JwtHandler $jwtHandler,
         QuoteValidator $quoteValidator
-    )
-    {
+    ) {
         $this->documentManager = $documentManager;
         $this->orderValidator = $orderValidator;
         $this->responseFactory = $responseFactory;
@@ -165,6 +163,7 @@ class Create
      * @param Request $request
      * @return Order $order
      * @throws HttpBadRequestException
+     * @throws Throwable
      */
     public function createOrder(Request $request): Order
     {
@@ -184,7 +183,7 @@ class Create
         $orderTotal = '0';
         $locationId = null;
         foreach ($data['items'] as $item) {
-            try{
+            try {
                 $decodedToken = $this->jwtHandler->decode($item);
                 $claims = $decodedToken->getClaims();
                 $this->quoteValidator->check($claims);
@@ -193,7 +192,7 @@ class Create
                 if ($locationId === null) {
                     $locationId = $claims['product']['locationId'];
                 } else {
-                    if($claims['product']['locationId'] != $locationId) {
+                    if ($claims['product']['locationId'] != $locationId) {
                         throw new HttpBadRequestException(
                             $request,
                             'You cannot order products for different locations at the same time.'
@@ -212,12 +211,15 @@ class Create
             $oi = $this->orderItemFactory->createFromArray($item);
             $order->addItem($oi);
         }
-        if ($isSuperAdmin || (
-                $this->authorizer->hasRoles($request, ['user.roles.employee', 'user.roles.admin']) &&
-                $this->authorizer->isUserInLocation($request, $locationId)
-            )
+        if (
+            $isSuperAdmin || ($this->authorizer->hasRoles($request, ['user.roles.employee', 'user.roles.admin']) &&
+                $this->authorizer->isUserInLocation($request, $locationId))
         ) {
             $order->setDiscount($data['discount']);
+        }
+        if($order->getDiscount() > 0 && $order->getDiscount() <= 100) {
+            $orderTotal = bcsub($orderTotal, (bcdiv($orderTotal, '100') * $order->getDiscount()));
+
         }
         $order->setTotal($orderTotal);
         return $order;
