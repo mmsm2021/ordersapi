@@ -12,6 +12,8 @@ use MMSM\Lib\Factories\JsonResponseFactory;
 use Psr\Http\Message\ResponseInterface;
 use Psr\Http\Message\ServerRequestInterface as Request;
 use Respect\Validation\Exceptions\ValidationException;
+use Slim\Exception\HttpNotFoundException;
+use Slim\Exception\HttpUnauthorizedException;
 use Throwable;
 
 class Update
@@ -216,11 +218,23 @@ class Update
                 'user.roles.super',
             ]
         );
-
+        $isSuperAdmin = $this->authorizer->hasRole($request, 'user.roles.super');
         $body = $request->getParsedBody();
         $this->patchValidator->validate($body);
         /** @var Order $order */
         $order = $this->documentManager->find(Order::class, $orderId);
+        if (!($order instanceof Order)) {
+            throw new HttpNotFoundException(
+                $request,
+                'Failed to find Order by id.'
+            );
+        }
+        if (!$isSuperAdmin && !$this->authorizer->isUserInLocation($request, $order->getLocationId())) {
+            throw new HttpUnauthorizedException(
+                $request,
+                'You do not have access to modify that order.'
+            );
+        }
         $itemsOnOrder = $this->isItemOnOrder($order, $body);
         if ($itemsOnOrder) {
             $order = $this->updateOrder($order, $body);
